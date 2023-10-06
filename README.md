@@ -16,13 +16,8 @@
 
 ## Descrição
 
-**pandas** is a Python package that provides fast, flexible, and expressive data
-structures designed to make working with "relational" or "labeled" data both
-easy and intuitive. It aims to be the fundamental high-level building block for
-doing practical, **real world** data analysis in Python. Additionally, it has
-the broader goal of becoming **the most powerful and flexible open source data
-analysis / manipulation tool available in any language**. It is already well on
-its way towards this goal.
+O projeto **"Ana's Bot"** é um projeto Python desenvolvido com a biblioteca **discord.py**, criado para a disciplina de Computação 1 na UFRJ. O projeto se resume em um bot que oferece jogos interativos para os usuários de um servidor do Discord, com o objetivo de aprimorar habilidades de resolução de problemas, estratégia e colaboração dos usuários, ou só ajudá-los a passar o tempo enquanto esperam um amigo chegar. As principais características do bot incluem a capacidade de jogar três jogos populares: Forca, Jogo da Velha e Torre de Hanói. 
+
 
 ## Sumário
 
@@ -37,36 +32,17 @@ its way towards this goal.
 
 ## Features
 
-  - Easy handling of [**missing data**][missing-data] (represented as
-    `NaN`, `NA`, or `NaT`) in floating point as well as non-floating point data
-  - Size mutability: columns can be [**inserted and
-    deleted**][insertion-deletion] from DataFrame and higher dimensional
-    objects
-  - Automatic and explicit [**data alignment**][alignment]: objects can
-    be explicitly aligned to a set of labels, or the user can simply
-    ignore the labels and let `Series`, `DataFrame`, etc. automatically
-    align the data for you in computations
-  - Powerful, flexible [**group by**][groupby] functionality to perform
-    split-apply-combine operations on data sets, for both aggregating
-    and transforming data
-  - Make it [**easy to convert**][conversion] ragged,
-    differently-indexed data in other Python and NumPy data structures
-    into DataFrame objects
-  - Intelligent label-based [**slicing**][slicing], [**fancy
-    indexing**][fancy-indexing], and [**subsetting**][subsetting] of
-    large data sets
-  - Intuitive [**merging**][merging] and [**joining**][joining] data
-    sets
-  - Flexible [**reshaping**][reshape] and [**pivoting**][pivot-table] of
-    data sets
-  - [**Hierarchical**][mi] labeling of axes (possible to have multiple
-    labels per tick)
-  - Robust IO tools for loading data from [**flat files**][flat-files]
-    (CSV and delimited), [**Excel files**][excel], [**databases**][db],
-    and saving/loading data from the ultrafast [**HDF5 format**][hdfstore]
-  - [**Time series**][timeseries]-specific functionality: date range
-    generation and frequency conversion, moving window statistics,
-    date shifting and lagging
+* **Forca:** O bot permite que os usuários joguem o clássico jogo da Forca. Os usuários podem escolher uma palavra ou frase para que outros tentem adivinhar, e o bot acompanha o progresso do jogo, mostrando a forca e as letras adivinhadas. Os usuários também podem escolher jogar individualmemte, escolhendo sortear uma palavra do arquivo de palavras.
+
+* **Jogo da Velha:** Os usuários podem jogar o Jogo da Velha (ou Tic-Tac-Toe) com o bot ou entre si. O bot gerencia o tabuleiro, verifica as vitórias e empates e permite que os jogadores se divirtam com esse jogo clássico.
+
+* **Torre de Hanói:** O bot oferece a possibilidade de jogar o desafiador quebra-cabeça da Torre de Hanói, no qual os jogadores devem mover discos entre três pinos, respeitando as regras do jogo. O bot ajuda a acompanhar o progresso do jogo e a encontrar a solução para o quebra-cabeça.
+
+* **Comandos de ajuda:** O bot oferece comandos de ajuda para que os usuários possam acessar informações sobre como usar as funcionalidades disponíveis.
+
+* **Comandos de informações:** Os usuários podem obter informações sobre o bot, seus criadores e a disciplina de Computação 1 da UFRJ.
+
+* **Integração com o servidor do Discord:** O bot é configurado para interagir com os membros do servidor, reconhecendo comandos específicos e respondendo a interações dos usuários.
 
 
    [missing-data]: https://pandas.pydata.org/pandas-docs/stable/user_guide/missing_data.html
