@@ -1,0 +1,19 @@
+O projeto "Ana's Bot" é um projeto Python desenvolvido com a biblioteca discord.py, criado para a disciplina de Computação 1 na UFRJ. O projeto se resume em um bot que oferece jogos interativos para os usuários de um servidor do Discord, com o objetivo de aprimorar habilidades de resolução de problemas, estratégia e colaboração dos usuários, ou só ajudá-los a passar o tempo enquanto esperam um amigo chegar. As principais características do bot incluem a capacidade de jogar três jogos populares: Forca, Jogo da Velha e Torre de Hanói.
+O bot, por enquanto, está hospedado no servidor local em que o código é rodado.
+
+A biblioteca discord.py, segundo sua página no PyPi, é uma biblioteca de API escrita em python moderna, fácil de usar, cheia de recursos e assíncrona, pronta para uso no aplicativo Discord. Para mais informações, acesse o PyPi https://pypi.org/project/discord.py/ ou sua documentação https://discordpy.readthedocs.io/en/stable/api.html#.
+
+O código do projeto visa abordar os principais temas  do curso de computação 1 da ufrj, entre eles:
+– Funções
+– Condicionais
+– Loops (while e for)
+– Estruturas de coleção com encadeamento (list[dict], list[list], etc)
+∗ lista / tupla
+∗ dicionário
+– Interação com arquivos (leitura e escrita)
+– Interação com o usuário (terminal)
+– Tratamento de exceção (try/except)
+
+O projeto completo está no github: 
+
+Projeo para computação 1, ministrada por Luis Rennó, github, desenvolvido por Ana Schenkel Braga de Mendonça, github, linkedin.
