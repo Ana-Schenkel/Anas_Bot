@@ -1,6 +1,7 @@
 # """Main module."""
 
 import os
+
 import discord
 from discord.ext import commands
 
@@ -50,6 +51,11 @@ async def on_message(message):
         resposta = m.content == "1" or m.content == "2"
         return autor and resposta
 
+    def check_menu3(m):
+        autor = m.channel == channel and m.author == jogador
+        resposta = m.content == "1" or m.content == "2" or m.content == "3"
+        return autor and resposta
+
     def check_mention(m):
         autor = m.channel == channel and m.author == jogador
         mention = m.mentions
@@ -62,7 +68,7 @@ async def on_message(message):
 
     if message.content.startswith("$forca"):
         forca = open(
-            user + "\\anas_bot\\anas_bot\\comandos\\instru_forca.txt",
+            user + "\\anas_bot\\anas_bot\\jogo_forca\\instru_forca.txt",
             encoding="utf-8",
             mode="r",
         )
@@ -76,7 +82,13 @@ async def on_message(message):
         msg = await bot.wait_for("message", check=check_menu)
 
         if msg.content == "1":
-            await channel.send(f"Hello {msg.author}, uma palavra vai ser sorteada!")
+            await channel.send(
+                "Escolha uma nível: \n 1 - Fácil \n 2 - Médio \n 3 - Difícil "
+            )
+            nivel = await bot.wait_for("message", check=check_menu3)
+            await channel.send(
+                f"Hello {msg.author}, uma palavra de nivel {nivel.content} vai ser sorteada!"
+            )
             # palavra = forca.sortea_palavra()
         elif msg.content == "2":
             await jogador.send("Digite a palavra que você deseja que adivinhem!")
@@ -96,7 +108,7 @@ async def on_message(message):
 
     if message.content.startswith("$velha"):
         velha = open(
-            user + "\\anas_bot\\anas_bot\\comandos\\instru_velha.txt",
+            user + "\\anas_bot\\anas_bot\\jogo_velha\\instru_velha.txt",
             encoding="utf-8",
             mode="r",
         )
