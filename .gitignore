@@ -1,2 +1,6 @@
 venv_anas_bot
-/anas_bot/anas_bot/token.txt
+<<<<<<< HEAD
+anas_bot/anas_bot/token.txt
+=======
+anas_bot/anas_bot/token.txt
+>>>>>>> 8f9dbcb2116039eb4a3b9e4fc47321f1d9898f1a
