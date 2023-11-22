@@ -44,11 +44,11 @@ def sorteia_palavra(nivel):
     )
 
     # decide as linhas a serem sorteadas de acordo com o nível
-    if nivel == "fácil":
+    if nivel == "1":
         linha = randint(1, 30)
-    elif nivel == "médio":
+    elif nivel == "2":
         linha = randint(33, 62)
-    elif nivel == "difícil":
+    elif nivel == "3":
         linha = randint(65, 93)
 
     # lê o documento até chegar na linha sorteada
