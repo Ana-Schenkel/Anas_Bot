@@ -8,27 +8,26 @@
 from random import *
 
 
-def lista_jogadores():
-    """Essa função pergunta ao usuário quem participará do jogo e qual a ordem de jogada
+def sorteia_jogadores(jogador1, jogador2):
+    """Essa função sorteia a ordem de jogadores
 
     Returns:
         list: todos os jogadores da partida na ordem de jogada
     """
-    jogador1 = input("Digite o nome do jogador 1: ").lower()
-    jogador2 = input("Digite o nome do jogador 2: ").lower()
+    jogadores = ["", "", ""]
 
-    if "s" in input("Devo sortear quem joga primeiro?\n").lower():
-        i = randint(0, 1)
-        jogadores[i] = jogador1
-        jogadores[not i] = jogador2
-    else:
-        jogadores[0] = jogador1
-        jogadores[1] = jogador2
+    i = randint(0, 1)
+    jogadores[i] = jogador1
+    jogadores[not i] = jogador2
+
+    jogadores[2] = "Velha"
+
+    jogadores = tuple(jogadores)
 
     return jogadores
 
 
-def faz_jogada(jogador):
+def faz_jogada(jogador, jogadores, grade, bot, mensagem):
     """Essa função processa a próxima jogada do bot ou solicita que o usuário digite sua jogada.
 
     Args:
@@ -38,7 +37,7 @@ def faz_jogada(jogador):
        int: posição da jogada na grade
     """
     # vez do bot
-    if "bot" in jogadores[jogador]:
+    if bot == jogadores[jogador]:
         print(jogadores[jogador], "jogou:")
         # duas varíaveis para apoiar o processamento da jogada: cópia da grade e
         # verificador de vezes em que todos escolhas foram percorridos
@@ -103,10 +102,7 @@ def faz_jogada(jogador):
                     return jogada
     # vez do usuário
     else:
-        jogada = (
-            int(input("Digite a posição da sua jogada " + jogadores[jogador] + ": "))
-            - 1
-        )
+        jogada = int(mensagem) - 1
         return jogada
 
 
@@ -120,7 +116,7 @@ def imprime_grade(grade_desenho):
       str : desenho do tabuleiro
     """
 
-    desenho = "\n"
+    desenho = "```\n"
     # variável que auxilia a contar as linhas a serem concatenadas, "contador"
     cont = 0
     # percorre as linhas
@@ -135,7 +131,7 @@ def imprime_grade(grade_desenho):
         desenho = desenho.strip("|") + divisao
         # a cada linha percorrida, soma 3 ao contador
         cont += 3
-
+    desenho += "```"
     return desenho
 
 
@@ -199,49 +195,58 @@ def verifica_vitoria(grade_vitoria):
     return vitoria
 
 
-def jogo_da_velha():
+def jogo_da_velha(dados, jogadores, bot, mensagem):
     """Essa função controla a vez de cada jogador e quem é o vencedor.
 
     Returns:
         int: index do vencedor na lista de jogadores
     """
-
-    # setup inicial do jogo
+    indice_jogador = dados[0]
+    grade = dados[1]
+    # atualiza as retas de vitória
     str_vitoria = verifica_vitoria(grade)
-    print("Essas são as posições das jogadas: \n", imprime_grade("123456789"))
-    jogador = 0
 
     # laço que prende os jogadores até o fim do jogo
-    while not ("XXX" in str_vitoria or "OOO" in str_vitoria):
+    if not ("XXX" in str_vitoria or "OOO" in str_vitoria):
         if grade.count(" ") == 0:
-            jogador = 2
-            return jogador
+            return (indice_jogador, grade, "Deu Velha!", False)
 
-        jogada = faz_jogada(jogador)
+        jogada = faz_jogada(indice_jogador, jogadores, grade, bot, mensagem)
 
         # força o usuário a jogar em um espaço vazio
-        while grade[jogada] != " ":
+        if grade[jogada] != " ":
             print("Espaço ocupado, tente novamente.")
-            jogada = int(input())
+            return (indice_jogador, grade, "Espaço ocupado, tente novamente", True)
 
         # marca a jogada e troca o jogador
-        if jogador == 0:
+        if indice_jogador == 0:
             grade[jogada] = "X"
-            jogador += 1
-        elif jogador == 1:
+            indice_jogador += 1
+        elif indice_jogador == 1:
             grade[jogada] = "O"
-            jogador -= 1
+            indice_jogador -= 1
 
-        # atualiza o desenho da grade e as retas de vitória
+        # atualiza as retas de vitória
         str_vitoria = verifica_vitoria(grade)
-        print(imprime_grade(grade))
+        # print(imprime_grade(grade))
 
-    return not jogador
+        if "XXX" in str_vitoria or "OOO" in str_vitoria:
+            return (
+                not indice_jogador,
+                grade,
+                jogadores[indice_jogador] + "ganhou!",
+                False,
+            )
+        else:
+            return (indice_jogador, grade, "Vez do " + jogadores[indice_jogador], True)
+
+    else:
+        return (not indice_jogador, grade, jogadores[indice_jogador] + "ganhou!", False)
 
 
-grade = [" ", " ", " ", " ", " ", " ", " ", " ", " "]
-jogadores = ["", "", "Velha"]
+# grade = [" ", " ", " ", " ", " ", " ", " ", " ", " "]
+# jogadores = ["", "", "Velha"]
 
-if __name__ == "__main__":
-    lista_jogadores()
-    print(jogadores[jogo_da_velha()], "ganhou")
+# if __name__ == "__main__":
+#     sorteia_jogadores()
+#     print(jogadores[jogo_da_velha()], "ganhou")
