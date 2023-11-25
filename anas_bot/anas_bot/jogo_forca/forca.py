@@ -114,6 +114,7 @@ def desenha_forca(dados):
 
     # desenha a forca de acordo com a vida
     return (
+        "\nObs: digite '$$' antes da letra\n"
         "```"
         + tupla_forca[vida]
         + "\n"
@@ -174,7 +175,7 @@ def forca(dados, mensagem):
             usados.append(letra)
             if vida == 0:
                 return (
-                    "Você perdeu, a palavra era" + palavra,
+                    "Você perdeu, a palavra era " + palavra,
                     [palavra, chute, usados, vida],
                     False,
                 )

@@ -47,6 +47,7 @@ async def menu_forca(channel, jogador):
 
     Returns:
         str: member que irá jogar
+        bool: caso false, não se criará um novo jogo
 
     """
 
@@ -75,13 +76,14 @@ async def menu_forca(channel, jogador):
 
     embed = discord.Embed(
         title="Menu Forca",
-        description=f"{jogador.name}, escolha uma opção: \n 1 - Sortear uma palavra \n 2 - Desafiar um amigo",
+        description=f"{jogador.name}, escolha uma opção: \n 1 - Sortear uma palavra \n 2 - Desafiar um amigo \n 3 - Ver instruções",
         color=0xFF5733,
     )
     await channel.send(embed=embed)
 
-    msg = await bot.wait_for("message", check=check_menu2)
+    msg = await bot.wait_for("message", check=check_menu3)
 
+    # Sortear Palavra
     if msg.content == "1":
         embed = discord.Embed(
             title="Sorteio Forca",
@@ -95,27 +97,55 @@ async def menu_forca(channel, jogador):
             f"Olá {msg.author}, uma palavra de nivel {nivel} foi sorteada!"
         )
         palavra = f.sorteia_palavra(nivel)
-        jogador1 = "bot"
 
+    # Desafiar Amigo
     elif msg.content == "2":
+        # Pede uma palavra na DM
         await jogador.send("Digite a palavra que você deseja que adivinhem!")
         palavra = await bot.wait_for(
             "message",
             check=lambda x: x.channel == jogador.dm_channel and x.author == jogador,
         )
         palavra = palavra.content
+
+        # Pede o nome do jogador
         embed = discord.Embed(
             title="Desafio forca",
-            description=f"{jogador.name}, digite quem você deseja desafiar",
+            description=f"{jogador.name}, digite quem você deseja desafiar (marque com @nome)",
             color=0xFF5733,
         )
         await channel.send(embed=embed)
         jogador1 = await bot.wait_for("message", check=check_mention)
         jogador1 = jogador1.mentions
         jogador1 = jogador1[0]
-        await channel.send(f"{jogador1} você foi desafiado para o jogo da forca!")
         jogador = jogador1
 
+        # Verifica quem foi desafiado e o direciona
+        if jogador.name in jogos_forca:
+            await channel.send(f"{jogador} você foi desafiado para o jogo da forca!")
+            embed = discord.Embed(
+                title="Aceitar desafio?",
+                description=f"{jogador.name}, você já estava com um jogo em andamento, escolha: \n 1 - Aceitar novo desafio \n 2 - Retomar jogo anterior e desistir do desafio",
+                color=0xFF5733,
+            )
+            await channel.send(embed=embed)
+            msg = await bot.wait_for("message", check=check_menu2)
+            if msg.content == "2":
+                return jogador
+        elif jogador == bot.user:
+            await channel.send(
+                "Você não pode me desafiar! (eu já sei a palavra huahua)"
+            )
+            return False
+        else:
+            await channel.send(f"{jogador} você foi desafiado para o jogo da forca!")
+
+    # Ver Instruções
+    elif msg.content == "3":
+        await instru("forca", channel)
+        return False
+
+    # Salva os parâmetros
     chute = len(palavra) * "_"
     usados = []
     vida = 6
@@ -126,6 +156,48 @@ async def menu_forca(channel, jogador):
     doc.close()
 
     return jogador
+
+
+async def forca(channel, jogador, message):
+    """Essa função verifica se o usuário pode jogar e testa a letra digitada pelo jogador, atualizando o estado do jogo
+
+    Args:
+        channel (str): nome do canal de texto das mensagens
+        jogador (Member): informações do usuário que deseja jogar
+        message (Message): mensagem enviada no discord
+    """
+
+    # verifica se o jogador tem um jogo salvo
+    if jogador.name in jogos_forca:
+        msg = message.content.strip("$ ")
+        resultado = f.forca(
+            jogos_forca[jogador.name], msg
+        )  # função que processa a letra
+        # print(resultado)
+        await channel.send(resultado[0])
+        jogos_forca[jogador.name] = resultado[1]
+
+        desenho = f.desenha_forca(jogos_forca[jogador.name])
+        await channel.send(f"**Forca de {jogador.name}** {desenho}")
+
+        # Verfica se o jogo acabou e retira os dados do jogo
+        if resultado[2] == False:
+            jogos_forca.pop(jogador.name)
+
+        # Atualiza o jogo no arquivo
+        doc = open(
+            user + "\\anas_bot\\anas_bot\\jogo_forca\\estados_forca.json",
+            encoding="utf-8",
+            mode="w",
+        )
+        json.dump(jogos_forca, doc)
+        doc.close()
+    # Pede para o jogador criar um jogo novo
+    else:
+        await channel.send(
+            jogador.name
+            + ", você ainda não iniciou um novo jogo de forca, digite '$forca'!"
+        )
 
 
 @bot.event
@@ -203,60 +275,38 @@ async def on_message(message):
             return True and autor
 
     # ************************************************* Jogo Forca *************************************************
-    # caso o usuário digite $forca, verifica se o usuário tem um jogo em andamento e/ou inicia novos jogos
 
+    # caso o usuário digite $forca, verifica se o usuário tem um jogo em andamento e/ou inicia novos jogos
     if message.content.startswith("$forca"):
+        # Jogo em andamento
         if jogador.name in jogos_forca:
             embed = discord.Embed(
                 title="Jogando",
-                description=f"{jogador.name}, você já está jogando a forca, escolha: \n 1 - Continuar jogo antigo \n 2 - Iniciar novo jogo \n 3 - Ver instruções",
+                description=f"{jogador.name}, você já está jogando a forca, escolha: \n 1 - Continuar jogo antigo \n 2 - Ir para menu",
                 color=0xFF5733,
             )
             await channel.send(embed=embed)
-            msg = await bot.wait_for("message", check=check_menu3)
-
+            msg = await bot.wait_for("message", check=check_menu2)
+            # Continuar jogo antigo
             if msg.content == "1":
                 desenho = f.desenha_forca(jogos_forca[jogador.name])
                 await channel.send(f"**Forca de {jogador.name}** {desenho}")
+            # Ir para menu
             elif msg.content == "2":
                 jogador = await menu_forca(channel, jogador)
-                desenho = f.desenha_forca(jogos_forca[jogador.name])
-                await channel.send(desenho)
-            elif msg.content == "3":
-                await instru("forca", channel)
-
+                if jogador:
+                    desenho = f.desenha_forca(jogos_forca[jogador.name])
+                    await channel.send(f"**Forca de {jogador.name}**{desenho}")
+        # Novo jogo
         else:
-            await instru("forca", channel)
             jogador = await menu_forca(channel, jogador)
-            desenho = f.desenha_forca(jogos_forca[jogador.name])
-            await channel.send(desenho)
+            if jogador:
+                desenho = f.desenha_forca(jogos_forca[jogador.name])
+                await channel.send(f"**Forca de {jogador.name}**{desenho}")
 
     # faz rodar a forca caso o usuário digite $$letra
     if message.content.startswith("$$"):
-        if jogador.name in jogos_forca:
-            msg = message.content.strip("$ ")
-            resultado = f.forca(jogos_forca[jogador.name], msg)
-            print(resultado)
-            await channel.send(resultado[0])
-            jogos_forca[jogador.name] = resultado[1]
-
-            desenho = f.desenha_forca(jogos_forca[jogador.name])
-            await channel.send(f"**Forca de {jogador.name}** {desenho}")
-
-            if resultado[2] == False:
-                jogos_forca.pop(jogador.name)
-
-            doc = open(
-                user + "\\anas_bot\\anas_bot\\jogo_forca\\estados_forca.json",
-                encoding="utf-8",
-                mode="w",
-            )
-            json.dump(jogos_forca, doc)
-            doc.close()
-        else:
-            await channel.send(
-                "Você ainda não iniciou um novo jogo de forca, digite '$forca'!"
-            )
+        await forca(channel, jogador, message)
 
     # ************************************************* Jogo da Velha *************************************************
 
@@ -311,7 +361,7 @@ async def on_message(message):
 
     if message.content.startswith("$hanoi"):
         hanoi = open(
-            user + "\\anas_bot\\anas_bot\\comandos\\instru_hanoi.txt",
+            user + "\\anas_bot\\anas_bot\\comandos\\intru_hanoi.txt",
             encoding="utf-8",
             mode="r",
         )
