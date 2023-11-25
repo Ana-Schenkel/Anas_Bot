@@ -7,26 +7,8 @@ import os
 from random import *
 
 
-def menu():
-    """Esta função pergunta ao usuário qual a palavra ou se ele deseja sortear do arquivo
-
-    Returns:
-        str: palavra a ser adivinhada no jogo da forca
-    """
-
-    if "amigo" in input(
-        "Você deseja desafiar um amigo ou sortear uma palavra do arquivo? \n"
-    ):
-        palavra = input("Escreva uma palavra para ele adivinhar: ")
-    else:
-        nivel = input("Escolha um nível (fácil, médio ou difícil): ")
-        palavra = sorteia_palavra(nivel)
-
-    return palavra
-
-
 def sorteia_palavra(nivel):
-    """Essa função sorteia uma palavra de acordo com o nível de dificuldade
+    """Essa função sorteia uma palavra de acordo com o nível de dificuldade escolhido
 
     Args:
         nivel (str): nível de dificuldade da palavra
@@ -44,11 +26,11 @@ def sorteia_palavra(nivel):
     )
 
     # decide as linhas a serem sorteadas de acordo com o nível
-    if nivel == "fácil":
+    if nivel == "1":
         linha = randint(1, 30)
-    elif nivel == "médio":
+    elif nivel == "2":
         linha = randint(33, 62)
-    elif nivel == "difícil":
+    elif nivel == "3":
         linha = randint(65, 93)
 
     # lê o documento até chegar na linha sorteada
@@ -116,65 +98,104 @@ def letra_certa(letra, palavra, chute):
     return chute
 
 
-def forca_simples(palavra):
-    """Essa função testa as letras ou sílabas digitadas, desenha a forca e controla a vida do jogador,
+def desenha_forca(dados):
+    """Essa função desenha a forca de acordo com os parâmetros atuais
+
+    Args:
+        dados (list): lista com os parâmetros atuais do jogo [palavra, chute, usados, vida]
+
+    Returns:
+        str: desenho da forca
+    """
+
+    chute = dados[1]
+    usados = dados[2]
+    vida = dados[3]
+
+    # desenha a forca de acordo com a vida
+    return (
+        "\nObs: digite '$$' antes da letra\n"
+        "```"
+        + tupla_forca[vida]
+        + "\n"
+        + " ".join(chute)
+        + "\nLetras testadas: "
+        + " ".join(usados)
+        + "```"
+    )
+
+
+def forca(dados, mensagem):
+    """Essa função testa as letras ou sílabas digitadas e controla a vida do jogador,
     decidindo o resultado final do jogo
 
     Args:
-        palavra (str): palavra a ser adivinhada
+        dados (list): lista com os parâmetros atuais do jogo [palavra, chute, usados, vida]
+        mensagem (str): letra ou sílaba a ser testada
 
     Returns:
-        str: resultado do jogo
+        tupla: resultado do teste (str), parâmetros alterados (list), se o jogo continua (bool)
     """
+    # estabelesce os parâmetros do jogo de acordo com os dados
+    palavra = dados[0]
+    chute = dados[1]
+    usados = dados[2]
+    vida = int(dados[3])
 
-    chute = len(palavra) * "_"
-    usados = []
-    vida = 6
+    # verifica se o jogador já acertou a palavra
+    if palavra != chute:
+        letra = retira_acento(mensagem)
+        palavra_formatada = retira_acento(palavra)
 
-    # prende o jogador até ele acertar a palavra ou perder o jogo
-    while palavra != chute:
-        # desenha a forca de acordo com a vida
-        print(
-            forca[vida]
-            + "\n"
-            + " ".join(chute)
-            + "\nLetras testadas: "
-            + " ".join(usados)
-        )
+        # verifica se o jogador já usou essa letra ou sílaba
+        if letra in usados:
+            return ("Já usou essa letra", dados, True)
 
-        if vida == 0:
-            return "Você perdeu"
-        else:
-            letra = retira_acento(input())
-            palavra_formatada = retira_acento(palavra)
-
-            # prende o jogador até ele usar uma nova letra
-            while letra in usados:
-                print("Já usou essa letra")
-                letra = input()
-
-            # testa se a letra está na palavra
-            if letra in palavra_formatada:
-                chute = letra_certa(letra, palavra_formatada, chute)
-                # retorna os acentos para o chute
-                for i in range(len(chute)):
-                    if chute[i] != "_":
-                        chute = chute[:i] + palavra[i] + chute[i + 1 :]
+        # testa se a letra está na palavra
+        if letra in palavra_formatada:
+            chute = letra_certa(letra, palavra_formatada, chute)
+            # retorna os acentos para o chute
+            for i in range(len(chute)):
+                if chute[i] != "_":
+                    chute = chute[:i] + palavra[i] + chute[i + 1 :]
+            # adiciona a letra ou sílaba testada para a lista de usados
+            usados.append(letra)
+            # verifica se a palavra está completa
+            if palavra == chute:
+                return (
+                    "Você venceu! A palavra era " + palavra,
+                    [palavra, chute, usados, vida],
+                    False,
+                )
             else:
-                vida -= 1
-                print(
-                    'A palavra não tem "' + letra + '", você pode errar mais',
-                    vida,
-                    "vezes",
+                return ("Tem essa letra", [palavra, chute, usados, vida], True)
+        else:  # a letra não está na palavra
+            vida -= 1
+            # adiciona a letra ou sílaba testada para a lista de usados
+            usados.append(letra)
+            if vida == 0:
+                return (
+                    "Você perdeu, a palavra era " + palavra,
+                    [palavra, chute, usados, vida],
+                    False,
+                )
+            else:
+                return (
+                    'A palavra não tem "'
+                    + letra
+                    + '", você pode errar mais '
+                    + str(vida)
+                    + " vezes",
+                    [palavra, chute, usados, vida],
+                    True,
                 )
 
-            #adiciona a letra ou sílaba testada para a lista de usados
-            usados.append(letra)
+    else:
+        return "Parabéns! A palavra era " + palavra
 
-    return "Parabéns! A palavra era " + palavra
 
-#desenho da forca
-forca = (
+# desenho da forca
+tupla_forca = (
     "| \n|_0 \n /|\\ \n / \\",
     "| \n|_0 \n /|\\ \n /",
     "| \n|_0\n /|\\ \n",
@@ -185,4 +206,4 @@ forca = (
 )
 
 if __name__ == "__main__":
-    print(forca_simples(menu()))
+    print(forca(input("Insira uma lista [palavra, chute, usados, vida]").split(",")))

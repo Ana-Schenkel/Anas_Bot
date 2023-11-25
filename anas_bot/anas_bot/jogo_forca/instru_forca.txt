@@ -1,1 +1,9 @@
-instruções para a forca
+```Como jogar a forca?
+
+Iniciar um Novo Jogo da Forca:
+Utilize o comando $forca para ir ao menu e iniciar um novo jogo da Forca.
+
+Adivinhar uma Letra:
+Antes de adivinhar uma letra, insira os símbolos "$$" seguidos da letra desejada. Por exemplo: $$a, $$b, $$c, etc.
+
+```
