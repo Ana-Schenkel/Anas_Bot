@@ -208,15 +208,11 @@ def jogo_da_velha(dados, jogadores, bot, mensagem):
 
     # laço que prende os jogadores até o fim do jogo
     if not ("XXX" in str_vitoria or "OOO" in str_vitoria):
-        if grade.count(" ") == 0:
-            return (indice_jogador, grade, "Deu Velha!", False)
-
         jogada = faz_jogada(indice_jogador, jogadores, grade, bot, mensagem)
 
         # força o usuário a jogar em um espaço vazio
         if grade[jogada] != " ":
-            print("Espaço ocupado, tente novamente.")
-            return (indice_jogador, grade, "Espaço ocupado, tente novamente", True)
+            return (indice_jogador, grade, "**Espaço ocupado, tente novamente**", True)
 
         # marca a jogada e troca o jogador
         if indice_jogador == 0:
@@ -228,20 +224,35 @@ def jogo_da_velha(dados, jogadores, bot, mensagem):
 
         # atualiza as retas de vitória
         str_vitoria = verifica_vitoria(grade)
-        # print(imprime_grade(grade))
 
-        if "XXX" in str_vitoria or "OOO" in str_vitoria:
+        if grade.count(" ") == 0:
+            return (indice_jogador, grade, "**Deu Velha!**", False)
+
+        elif "XXX" in str_vitoria or "OOO" in str_vitoria:
             return (
                 not indice_jogador,
                 grade,
-                jogadores[indice_jogador] + "ganhou!",
+                "**" + jogadores[not indice_jogador] + " você ganhou!**",
                 False,
             )
         else:
-            return (indice_jogador, grade, "Vez do " + jogadores[indice_jogador], True)
+            return (
+                indice_jogador,
+                grade,
+                jogadores[not indice_jogador]
+                + " jogou! Vez de "
+                + jogadores[indice_jogador]
+                + " (digite '$#' antes do número da sua jogada)",
+                True,
+            )
 
     else:
-        return (not indice_jogador, grade, jogadores[indice_jogador] + "ganhou!", False)
+        return (
+            indice_jogador,
+            grade,
+            "**" + jogadores[indice_jogador] + " você ganhou!!**",
+            False,
+        )
 
 
 # grade = [" ", " ", " ", " ", " ", " ", " ", " ", " "]

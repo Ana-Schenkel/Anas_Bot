@@ -1,1 +1,30 @@
-instruções para o jogo da velha
+```Como jogar o jogo da velha?
+
+Iniciar um Novo Jogo da Velha:
+Digite o comando $velha para ir ao menu e começar um novo jogo de Jogo da Velha.
+
+Posições Disponíveis:
+As posições no tabuleiro são numeradas de 1 a 9, correspondendo às células do Jogo da Velha. Use esses números para fazer sua jogada.
+ 1 | 2 | 3 
+___|___|___
+ 4 | 5 | 6 
+___|___|___
+ 7 | 8 | 9 
+   |   |   
+
+Fazer uma Jogada:
+Para fazer uma jogada, use o formato "$# X", onde X é o número da posição em que deseja jogar. 
+Ex: digite "$# 5", para jogar em 5.
+Sua mensagem: $# 5
+Resultado:
+   |   |   
+___|___|___
+   | X |   
+___|___|___
+   |   |   
+   |   |   
+
+Vitória ou Empate:
+Se um jogador conseguir formar uma linha, coluna ou diagonal com seus símbolos, ele vence.
+Se todas as células forem preenchidas sem formar uma sequência vencedora, o jogo termina em "Velha".
+```

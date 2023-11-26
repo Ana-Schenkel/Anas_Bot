@@ -11,34 +11,47 @@ from discord.ext import commands
 bot = commands.Bot(command_prefix="$", intents=discord.Intents.all(), help_command=None)
 user = os.getcwd()
 
+
 # Pega os estados dos jogos anteriores
-doc = open(
-    user + "\\anas_bot\\anas_bot\\jogo_forca\\estados_forca.json",
-    encoding="utf-8",
-    mode="r",
-)
-jogos_forca = json.load(doc)
-doc.close()
-
-jogos_velha = {}
-
-
-async def instru(game, channel):
-    """Essa função lê o arquivo de instruções de um jogo
+def ler_doc(pasta, arquivo):
+    """Essa função lê um arquivo e retorna o seu conteúdo
 
     Args:
-        game (str): jogo que precisa das instruções
-        channel (str): nome do canal de texto que solicitou as mensagens
+        pasta (str): pasta do arquivo  com '\\'
+        arquivo (str): nome do arquivo com o tipo
+
+    Returns:
+        str: conteúdo do arquivo .txt
+        dict: conteúdo do arquivo .json
 
     """
-    instru = open(
-        user + "\\anas_bot\\anas_bot\\jogo_" + game + "\\instru_" + game + ".txt",
-        encoding="utf-8",
-        mode="r",
-    )
-    instru_ = instru.read()
-    instru.close()
-    await channel.send(instru_)
+    try:
+        doc = open(
+            user + "\\anas_bot\\anas_bot\\" + pasta + arquivo,
+            encoding="utf-8",
+            mode="r",
+        )
+        if "json" in arquivo:
+            doc_cont = json.load(doc)
+        else:
+            doc_cont = doc.read()
+        doc.close()
+    except:
+        doc = open(
+            user + "\\anas_bot\\anas_bot\\" + pasta + arquivo,
+            encoding="utf-8",
+            mode="w",
+        )
+        doc.write('{"arquivo foi resetado": []}')
+        print("O arquivo " + arquivo + " foi resetado, confira!")
+        doc_cont = {}
+
+    return doc_cont
+
+
+jogos_forca = ler_doc("jogo_forca\\", "estados_forca.json")
+
+jogos_velha = ler_doc("jogo_velha\\", "estados_velha.json")
 
 
 async def menu_forca(channel, jogador):
@@ -145,7 +158,8 @@ async def menu_forca(channel, jogador):
 
     # Ver Instruções
     elif msg.content == "3":
-        await instru("forca", channel)
+        instru = ler_doc("jogo_forca\\", "instru_forca.txt")
+        await channel.send(instru)
         return False
 
     # Salva os parâmetros
@@ -162,6 +176,18 @@ async def menu_forca(channel, jogador):
 
 
 async def menu_velha(channel, jogador):
+    """Essa função opera o menu das configurações iniciais do jogo da velha
+
+    Args:
+        channel (str): nome do canal de texto que solicitou as mensagens
+        jogador (Member): informações do usuário que deseja jogar
+
+    Returns:
+        tupla: nome dos jogadores
+        bool: caso false, não se criará um novo jogo
+
+    """
+
     # **************************************************checks******************************************************
     # funções para conferir se s mensagens enviadas no canal de texto devem ser analisadas
     def check_menu2(m):
@@ -194,7 +220,7 @@ async def menu_velha(channel, jogador):
     msg = await bot.wait_for("message", check=check_menu3)
 
     if msg.content == "1":
-        await channel.send(f"Olá {msg.author}, você vai jogar contra o bot!")
+        await channel.send(f"Olá {msg.author}, você vai jogar contra mim!")
         jogador1 = bot.user
         # adicionar jogador bot
     elif msg.content == "2":
@@ -209,10 +235,26 @@ async def menu_velha(channel, jogador):
         jogador1 = jogador1[0]
         await channel.send(f"{jogador1} você foi desafiado para o jogo da velha!")
         # adicionar outro jogador
+
+        jogadores = False
+        for i in jogos_velha:
+            if jogador1.name in i:
+                jogadores = tuple(i.split(","))
+
+        if jogadores:
+            embed = discord.Embed(
+                title="Aceitar desafio?",
+                description=f"{jogador1.name}, você já estava com um jogo em andamento, escolha: \n 1 - Aceitar novo desafio \n 2 - Retomar jogo anterior e desistir do desafio",
+                color=0xFF5733,
+            )
+            await channel.send(embed=embed)
+            msg = await bot.wait_for("message", check=check_menu2)
+            if msg.content == "2":
+                return jogadores
+
     elif msg.content == "3":
-        await instru("velha", channel)
-        desenho = v.imprime_grade("123456789")
-        await channel.send("Essas são as posições das jogadas: \n" + desenho)
+        instru = ler_doc("jogo_velha\\", "instru_velha.txt")
+        await channel.send(instru)
         return False
 
     embed = discord.Embed(
@@ -223,14 +265,21 @@ async def menu_velha(channel, jogador):
     await channel.send(embed=embed)
 
     msg = await bot.wait_for("message", check=check_menu2)
+    vez = ""
 
     if msg.content == "1":
         jogadores = v.sorteia_jogadores(jogador.name, jogador1.name)
-        await channel.send(f"Hello {jogadores[0]}, vamos começar!")
+        vez = f"{jogadores[0]}, você é o primeiro! (digite '$#' antes do número da sua jogada)"
+        desenho = v.imprime_grade("123456789")
+        await channel.send(
+            f"**{jogadores[0]} e {jogadores[1]}, lembrem que essas são as posições das jogadas:** \n"
+            + desenho
+        )
+        await channel.send(f"**{vez}**")
         # sortear começar jogo da velha
     elif msg.content == "2":
         embed = discord.Embed(
-            title="Escolha velha",
+            title="Escolha",
             description=f"{jogador.name}, escreva quem irá jogar primeiro (marque com @nome)",
             color=0xFF5733,
         )
@@ -240,16 +289,32 @@ async def menu_velha(channel, jogador):
         primeiro_jogador = primeiro_jogador[0]
 
         if primeiro_jogador == jogador:
-            jogadores = (jogador.name, jogador1.name, "Velha")
-            await channel.send(f"Hello {jogador}, você é o primeiro!")
+            jogadores = (jogador.name, jogador1.name)
             # ordenar jogador como primeiro
         elif primeiro_jogador == jogador1:
-            jogadores = (jogador1.name, jogador.name, "Velha")
-            await channel.send(f"Hello {jogador1}, você é o primeiro!")
+            jogadores = (jogador1.name, jogador.name)
             # ordenar jogador1 como primeiro
+
+        vez = f"{jogadores[0]}, você joga primeiro! (digite '$#' antes do número da sua jogada)"
+
+        desenho = v.imprime_grade("123456789")
+        await channel.send(
+            f"**{jogadores[0]} e {jogadores[1]}, lembrem que essas são as posições das jogadas:** {desenho}{vez}\n"
+        )
         # começar jogo da velha
 
-    jogos_velha.update({jogadores: [0, [" ", " ", " ", " ", " ", " ", " ", " ", " "]]})
+    jogos_velha.update(
+        {
+            jogadores[0]
+            + ","
+            + jogadores[1]: [0, [" ", " ", " ", " ", " ", " ", " ", " ", " "], vez]
+        }
+    )
+    doc = open(user + "\\anas_bot\\anas_bot\\jogo_velha\\estados_velha.json", "w")
+    json.dump(jogos_velha, doc)
+    doc.close()
+    print(jogos_velha)
+
     return jogadores
 
 
@@ -292,6 +357,67 @@ async def forca(channel, jogador, message):
         await channel.send(
             jogador.name
             + ", você ainda não iniciou um novo jogo de forca, digite '$forca'!"
+        )
+
+
+async def bot_velha(channel, jogadores):
+    resultado = v.jogo_da_velha(
+        jogos_velha[jogadores[0] + "," + jogadores[1]], jogadores, bot.user.name, ""
+    )
+    desenho = v.imprime_grade(resultado[1])
+    await channel.send(
+        f"**Jogo da Velha de {jogadores[0]} e {jogadores[1]}** \n{resultado[2]} {desenho}"
+    )
+
+    jogos_velha[jogadores[0] + "," + jogadores[1]] = [
+        resultado[0],
+        resultado[1],
+        resultado[2],
+    ]
+    doc = open(user + "\\anas_bot\\anas_bot\\jogo_velha\\estados_velha.json", "w")
+    json.dump(jogos_velha, doc)
+    doc.close()
+
+
+async def velha(channel, jogador, message):
+    jogadores = False
+    str_jogadores = ""
+    for i in jogos_velha:
+        if jogador.name in i:
+            jogadores = tuple(i.split(","))
+            str_jogadores = i
+
+    if jogadores:
+        if jogador.name == jogadores[jogos_velha[str_jogadores][0]]:
+            msg = message.content.strip("$# ")
+            resultado = v.jogo_da_velha(
+                jogos_velha[str_jogadores], jogadores, bot.user.name, msg
+            )
+            desenho = v.imprime_grade(resultado[1])
+            await channel.send(
+                f"**Jogo da Velha de {jogadores[0]} e {jogadores[1]}** \n{resultado[2]} {desenho}"
+            )
+
+            jogos_velha[str_jogadores] = [resultado[0], resultado[1], resultado[2]]
+
+            if resultado[3] == False:
+                jogos_velha.pop(str_jogadores)
+
+            doc = open(
+                user + "\\anas_bot\\anas_bot\\jogo_velha\\estados_velha.json", "w"
+            )
+            json.dump(jogos_velha, doc)
+            doc.close()
+
+            if resultado[3]:
+                if bot.user.name == jogadores[jogos_velha[str_jogadores][0]]:
+                    await bot_velha(channel, jogadores)
+
+        else:
+            await channel.send("Não é sua vez " + jogador.name)
+    else:
+        await channel.send(
+            jogador.name + ", você ainda não iniciou um jogo da velha, digite '$velha'"
         )
 
 
@@ -347,27 +473,12 @@ async def on_message(message):
     jogador = message.author
 
     # **************************************************checks******************************************************
-    # funções para conferir se s mensagens enviadas no canal de texto devem ser analisadas
-    def check(m):
-        return m.channel == channel and m.author == jogador
+    # função para conferir se s mensagens enviadas no canal de texto devem ser analisadas
 
     def check_menu2(m):
         autor = m.channel == channel and m.author == jogador
         resposta = m.content == "1" or m.content == "2"
         return autor and resposta
-
-    def check_menu3(m):
-        autor = m.channel == channel and m.author == jogador
-        resposta = m.content == "1" or m.content == "2" or m.content == "3"
-        return autor and resposta
-
-    def check_mention(m):
-        autor = m.channel == channel and m.author == jogador
-        mention = m.mentions
-        if len(mention) > 1 or mention == []:
-            return False
-        else:
-            return True and autor
 
     # ************************************************* Jogo Forca *************************************************
 
@@ -404,51 +515,49 @@ async def on_message(message):
         await forca(channel, jogador, message)
 
     # ************************************************* Jogo da Velha *************************************************
-
+    # caso o usuário digite $forca, verifica se o usuário tem um jogo em andamento e/ou inicia novos jogos
     if message.content.startswith("$velha"):
-        await instru("velha", channel)
-        desenho = v.imprime_grade("123456789")
-        await channel.send("Essas são as posições das jogadas: \n" + desenho)
-
-        jogadores = await menu_velha(channel, jogador)
-
-        if bot.user.name == jogadores[jogos_velha[jogadores][0]]:
-            resultado = v.jogo_da_velha(
-                jogos_velha[jogadores], jogadores, bot.user.name, msg
-            )
-            desenho = v.imprime_grade(resultado[1])
-            await channel.send(resultado[2] + desenho)
-            jogos_velha[jogadores] = [resultado[0], resultado[1]]
-
-    if message.content.startswith("$#"):
+        jogadores = False
+        str_jogadores = ""
         for i in jogos_velha:
             if jogador.name in i:
-                jogadores = i
-                print(jogadores)
+                jogadores = tuple(i.split(","))
+                str_jogadores = i
+        print(jogadores)
 
-        if jogador.name == jogadores[jogos_velha[jogadores][0]]:
-            msg = message.content.strip("$# ")
-            resultado = v.jogo_da_velha(
-                jogos_velha[jogadores], jogadores, bot.user.name, msg
+        if jogadores:
+            embed = discord.Embed(
+                title="Jogando",
+                description=f"{jogador.name}, você já está jogando o jogo da velha, escolha: \n 1 - Continuar jogo antigo \n 2 - Ir para menu",
+                color=0xFF5733,
             )
-            desenho = v.imprime_grade(resultado[1])
-            await channel.send(resultado[2] + desenho)
-
-            if resultado[3] == False:
-                jogos_velha.pop(jogadores)
-
-            jogos_velha[jogadores] = [resultado[0], resultado[1]]
-
-            if bot.user.name == jogadores[jogos_velha[jogadores][0]]:
-                resultado = v.jogo_da_velha(
-                    jogos_velha[jogadores], jogadores, bot.user.name, msg
+            await channel.send(embed=embed)
+            msg = await bot.wait_for("message", check=check_menu2)
+            # Continuar jogo antigo
+            if msg.content == "1":
+                desenho = v.imprime_grade(jogos_velha[str_jogadores][1])
+                await channel.send(
+                    f"**Jogo da Velha de {jogadores[0]} e {jogadores[1]}** \n{jogos_velha[str_jogadores][2]} {desenho}"
                 )
-                desenho = v.imprime_grade(resultado[1])
-                await channel.send(resultado[2] + desenho)
-                jogos_velha[jogadores] = [resultado[0], resultado[1]]
+            # Ir para menu
+            elif msg.content == "2":
+                jogadores = await menu_velha(channel, jogador)
+                if jogadores:
+                    if bot.user.name == jogadores[jogos_velha[str_jogadores][0]]:
+                        await bot_velha(channel, jogadores)
 
         else:
-            await channel.send("Não é sua vez " + jogador.name)
+            jogadores = await menu_velha(channel, jogador)
+            if jogadores:
+                if (
+                    bot.user.name
+                    == jogadores[jogos_velha[jogadores[0] + "," + jogadores[1]][0]]
+                ):
+                    await bot_velha(channel, jogadores)
+
+    # faz rodar a velha caso o usuário digite $#número
+    if message.content.startswith("$#"):
+        await velha(channel, jogador, message)
 
     # ************************************************* Torre de Hanoi *************************************************
 
@@ -463,10 +572,8 @@ async def on_message(message):
 
 
 # roda o bot definido no token
-token = open(
-    user + "\\anas_bot\\anas_bot\\token.txt",
-    encoding="utf-8",
-    mode="r",
-)
-token = token.read()
-bot.run(token)
+token = ler_doc("", "token.txt")
+try:
+    bot.run(token)
+except:
+    print("Algo errado com o arquivo token.txt, confira!")
