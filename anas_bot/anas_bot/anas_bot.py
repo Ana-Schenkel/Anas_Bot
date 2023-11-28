@@ -171,6 +171,34 @@ async def pede_mention(channel, jogador, titulo, descri):
     return pessoa
 
 
+async def pede_dm(jogador, descri):
+    """Essa função recebe as características de um embed de menu com duas escolhas e retorna a resposta do usuário
+
+    Args:
+        channel (str): nome do canal de texto que solicitou as mensagens
+        jogador (Member): informações do usuário que irá responder
+        descri (str): descrição da mensagem enviada pelo bot
+
+    Returns:
+        str: conteúdo da resposta do usuário
+
+    """
+    await jogador.send(descri)
+    try:
+        palavra = await bot.wait_for(
+            "message",
+            timeout=300.0,
+            check=lambda x: x.channel == jogador.dm_channel and x.author == jogador,
+        )
+        palavra = palavra.content
+    except TimeoutError:
+        await jogador.send(
+            f"O tempo de digitar a palavra acabou {jogador.name}, tente novamente"
+        )
+        return False
+    return palavra
+
+
 # Funções assíncronas que definem os parâmetros inciais dos jogos ****************************************************
 async def menu_forca(channel, jogador):
     """Essa função opera o menu das configurações iniciais do jogo da forca
@@ -205,20 +233,24 @@ async def menu_forca(channel, jogador):
     # Desafiar Amigo
     elif res == "2":
         # Pede uma palavra na DM
-        await jogador.send("Digite a palavra que você deseja que adivinhem na forca!")
-        try:
-            palavra = await bot.wait_for(
-                "message",
-                timeout=300.0,
-                check=lambda x: x.channel == jogador.dm_channel and x.author == jogador,
-            )
-        except TimeoutError:
-            await channel.send(
-                f"O tempo de digitar a palavra acabou {jogador.name}, tente novamente"
-            )
-            return False
+        # await jogador.send("Digite a palavra que você deseja que adivinhem na forca!")
+        # try:
+        #     palavra = await bot.wait_for(
+        #         "message",
+        #         timeout=300.0,
+        #         check=lambda x: x.channel == jogador.dm_channel and x.author == jogador,
+        #     )
+        # except TimeoutError:
+        #     await channel.send(
+        #         f"O tempo de digitar a palavra acabou {jogador.name}, tente novamente"
+        #     )
+        #     return False
 
-        palavra = palavra.content
+        palavra = await pede_dm(
+            jogador, "Digite a palavra que você deseja que adivinhem na forca!"
+        )
+        if palavra == False:
+            return False
 
         # Pede o nome do jogador
         descri = "digite quem você deseja desafiar"

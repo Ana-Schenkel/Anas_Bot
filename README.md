@@ -1,21 +1,13 @@
 <div align="center">
-  <img src=""><br>
-  //foto discord
+  <img src="https://i.pinimg.com/originals/88/00/5f/88005f7b9247e2dd7a1f8dd8b1034100.jpg" height=80><br>
+  <h1> Ana's Bot </h1>
+  <h2> ~ jogos tradicionais para discord com python ~ </h2>
+  <h2>  </h2>
 </div>
-
----
-
-# Ana's bot: jogos tradicionais para discord com python.
-
-|         |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
-| ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Testing | [![CI - Test](https://github.com/pandas-dev/pandas/actions/workflows/unit-tests.yml/badge.svg)](https://github.com/pandas-dev/pandas/actions/workflows/unit-tests.yml) [![Coverage](https://codecov.io/github/pandas-dev/pandas/coverage.svg?branch=main)](https://codecov.io/gh/pandas-dev/pandas)                                                                                                                                                                                                                                                                                    |
-| Package | [![PyPI Latest Release](https://img.shields.io/pypi/v/pandas.svg)](https://pypi.org/project/pandas/) [![PyPI Downloads](https://img.shields.io/pypi/dm/pandas.svg?label=PyPI%20downloads)](https://pypi.org/project/pandas/) [![Conda Latest Release](https://anaconda.org/conda-forge/pandas/badges/version.svg)](https://anaconda.org/conda-forge/pandas) [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/pandas.svg?label=Conda%20downloads)](https://anaconda.org/conda-forge/pandas)                                                                              |
-| Meta    | [![Powered by NumFOCUS](https://img.shields.io/badge/powered%20by-NumFOCUS-orange.svg?style=flat&colorA=E1523D&colorB=007D8A)](https://numfocus.org) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3509134.svg)](https://doi.org/10.5281/zenodo.3509134) [![License - BSD 3-Clause](https://img.shields.io/pypi/l/pandas.svg)](https://github.com/pandas-dev/pandas/blob/main/LICENSE) [![Slack](https://img.shields.io/badge/join_Slack-information-brightgreen.svg?logo=slack)](https://pandas.pydata.org/docs/dev/development/community.html?highlight=slack#community-slack) |
 
 ## Descrição
 
-O projeto **"Ana's Bot"** é um projeto Python desenvolvido com a biblioteca **discord.py**, criado para a disciplina de Computação 1 na UFRJ. O projeto se resume em um bot que oferece jogos interativos para os usuários de um servidor do Discord, com o objetivo de aprimorar habilidades de resolução de problemas, estratégia e colaboração dos usuários, ou só ajudá-los a passar o tempo enquanto esperam um amigo chegar. As principais características do bot incluem a capacidade de jogar três jogos populares: Forca, Jogo da Velha e Torre de Hanói.
+O projeto **"Ana's Bot"** é um projeto Python desenvolvido com a biblioteca **discord.py**, criado para a disciplina de Computação 1 na UFRJ. O projeto se resume em um bot que oferece uma variedade de jogos interativos para os usuários de um servidor do Discord, que visam aprimorar habilidades de resolução de problemas, estratégia e colaboração dos usuários, ou só ajudá-los a passar o tempo enquanto esperam um amigo chegar. As principais características do bot incluem a capacidade de jogar três jogos populares: Forca, Jogo da Velha e Torre de Hanói.
 
 ## Sumário
 
@@ -41,54 +33,26 @@ O projeto **"Ana's Bot"** é um projeto Python desenvolvido com a biblioteca **d
 
 - **Integração com o servidor do Discord:** O bot é configurado para interagir com os membros do servidor, reconhecendo comandos específicos e respondendo a interações dos usuários.
 
-  [missing-data]: https://pandas.pydata.org/pandas-docs/stable/user_guide/missing_data.html
-  [insertion-deletion]: https://pandas.pydata.org/pandas-docs/stable/user_guide/dsintro.html#column-selection-addition-deletion
-  [alignment]: https://pandas.pydata.org/pandas-docs/stable/user_guide/dsintro.html?highlight=alignment#intro-to-data-structures
-  [groupby]: https://pandas.pydata.org/pandas-docs/stable/user_guide/groupby.html#group-by-split-apply-combine
-  [conversion]: https://pandas.pydata.org/pandas-docs/stable/user_guide/dsintro.html#dataframe
-  [slicing]: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#slicing-ranges
-  [fancy-indexing]: https://pandas.pydata.org/pandas-docs/stable/user_guide/advanced.html#advanced
-  [subsetting]: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#boolean-indexing
-  [merging]: https://pandas.pydata.org/pandas-docs/stable/user_guide/merging.html#database-style-dataframe-or-named-series-joining-merging
-  [joining]: https://pandas.pydata.org/pandas-docs/stable/user_guide/merging.html#joining-on-index
-  [reshape]: https://pandas.pydata.org/pandas-docs/stable/user_guide/reshaping.html
-  [pivot-table]: https://pandas.pydata.org/pandas-docs/stable/user_guide/reshaping.html
-  [mi]: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#hierarchical-indexing-multiindex
-  [flat-files]: https://pandas.pydata.org/pandas-docs/stable/user_guide/io.html#csv-text-files
-  [excel]: https://pandas.pydata.org/pandas-docs/stable/user_guide/io.html#excel-files
-  [db]: https://pandas.pydata.org/pandas-docs/stable/user_guide/io.html#sql-queries
-  [hdfstore]: https://pandas.pydata.org/pandas-docs/stable/user_guide/io.html#hdf5-pytables
-  [timeseries]: https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#time-series-date-functionality
-
 ## Utilização
 
-The source code is currently hosted on GitHub at:
-https://github.com/pandas-dev/pandas
+Para utilizar o bot você deve seuir as instruções abaixo:
 
-Binary installers for the latest released version are available at the [Python
-Package Index (PyPI)](https://pypi.org/project/pandas) and on [Conda](https://docs.conda.io/en/latest/).
-
-```sh
-# conda
-conda install -c conda-forge pandas
-```
+1. Crie um fork do repositório `Anas_Bot`, disponível em: https://github.com/Ana-Schenkel/Anas_Bot.
+2. Faça um clone local do seu fork com:
 
 ```sh
-# or PyPI
-pip install pandas
+#gitbash
+    $ git clone git@github.com:seu_nome_aqui/anas_bot.git
 ```
 
-The list of changes to pandas between each release can be found
-[here](https://pandas.pydata.org/pandas-docs/stable/whatsnew/index.html). For full
-details, see the commit logs at https://github.com/pandas-dev/pandas.
+3. Instale as bibliotecas do requirements.txt no seu ambiente de programação.
+4. Rode o código uma vez (terá uma mensagem de erro) para aparecer o arquivo token.txt na pasta "anas_bot".
+5. Crie o seu bot no discord, adicione-o em um servidor, e copie seu token para o arquivo token.txt.
+6. O bot deve entrar online assim que você rodar o código em seu computador.
 
 ## Dependencies
 
-- [NumPy - Adds support for large, multi-dimensional arrays, matrices and high-level mathematical functions to operate on these arrays](https://www.numpy.org)
-- [python-dateutil - Provides powerful extensions to the standard datetime module](https://dateutil.readthedocs.io/en/stable/index.html)
-- [pytz - Brings the Olson tz database into Python which allows accurate and cross platform timezone calculations](https://github.com/stub42/pytz)
-
-See the [full installation instructions](https://pandas.pydata.org/pandas-docs/stable/install.html#dependencies) for minimum supported versions of required, recommended and optional dependencies.
+- [Discord.py - Permite criar e rodar um bot capaz de enviar e receber mensagens no aplicativo do discord](https://pypi.org/project/discord.py/)
 
 ## License
 
@@ -96,38 +60,52 @@ Free software: GNU General Public License v3
 
 ## Discussão e desenvolvimento
 
-Most development discussions take place on GitHub in this repo, via the [GitHub issue tracker](https://github.com/pandas-dev/pandas/issues).
-
-Further, the [pandas-dev mailing list](https://mail.python.org/mailman/listinfo/pandas-dev) can also be used for specialized discussions or design issues, and a [Slack channel](https://pandas.pydata.org/docs/dev/development/community.html?highlight=slack#community-slack) is available for quick development related questions.
-
-There are also frequent [community meetings](https://pandas.pydata.org/docs/dev/development/community.html#community-meeting) for project maintainers open to the community as well as monthly [new contributor meetings](https://pandas.pydata.org/docs/dev/development/community.html#new-contributor-meeting) to help support new contributors.
-
-Additional information on the communication channels can be found on the [contributor community](https://pandas.pydata.org/docs/development/community.html) page.
+Esse projeto foi criado com o objetivo de aprimorar habilidades básicas da programação em python, como lógica de programação clássica (por exemplo criando um jogo da velha com bot), manipulação de estruturas de dados iteráveis e de coleção com encadeamento (string com a Forca, listas com o Jogo da Velha e pilhas com a Torre de Hanoi), manipulação de arquivos (lendo instruções e salvando os jogos iniciados), modularização (criando um projeto com várias pastas, arquivos e funções), documentação (com docstrings, comentários, README.md e requirements.txt), git workflow (com várias branchs organizadas), entre outras.
+Além dessas habilidades, o projeto também proporcionou a exploração dos conceitos da programação assíncrona e um maior entendimento do uso de bibliotecas com API, utilizando o discord.py.
+Pretende-se melhorar o projeto a partir do hosteamento em nuvem, para que o bot permaneça online sem a necessidade de um computador como servidor.
 
 ## Contribuir com o bot
 
-[![Open Source Helpers](https://www.codetriage.com/pandas-dev/pandas/badges/users.svg)](https://www.codetriage.com/pandas-dev/pandas)
+Todas as contribuições com o projeto são muito bem vindas! Caso tenha alguma sugestão por favor comunique <3
 
-All contributions, bug reports, bug fixes, documentation improvements, enhancements, and ideas are welcome.
+Aqui estão algumas formas de contribuir com o projeto Ana's Bot:
 
-A detailed overview on how to contribute can be found in the **[contributing guide](https://pandas.pydata.org/docs/dev/development/contributing.html)**.
+- **Reportar Bugs:**
 
-If you are simply looking to start working with the pandas codebase, navigate to the [GitHub "issues" tab](https://github.com/pandas-dev/pandas/issues) and start looking through interesting issues. There are a number of issues listed under [Docs](https://github.com/pandas-dev/pandas/issues?labels=Docs&sort=updated&state=open) and [good first issue](https://github.com/pandas-dev/pandas/issues?labels=good+first+issue&sort=updated&state=open) where you could start out.
+  Você pode reportar problemas em https://github.com/Ana-Schenkel/anas_bot/issues.
 
-You can also triage issues which may include reproducing bug reports, or asking for vital information such as version numbers or reproduction instructions. If you would like to start triaging issues, one easy way to get started is to [subscribe to pandas on CodeTriage](https://www.codetriage.com/pandas-dev/pandas).
+  Caso seja o seu caso, por favor inclua:
 
-Or maybe through using pandas you have an idea of your own or are looking for something in the documentation and thinking ‘this can be improved’...you can do something about it!
+  - Nome e versão do seu sistema operacional.
+  - Quaisquer detalhes sobre sua configuração local que possam ser úteis na solução de problemas.
+  - Etapas detalhadas para replicar o bug.
 
-Feel free to ask questions on the [mailing list](https://groups.google.com/forum/?fromgroups#!forum/pydata) or on [Slack](https://pandas.pydata.org/docs/dev/development/community.html?highlight=slack#community-slack).
+- **Consertar Bugs**
 
-As contributors and maintainers to this project, you are expected to abide by pandas' code of conduct. More information can be found at: [Contributor Code of Conduct](https://github.com/pandas-dev/.github/blob/master/CODE_OF_CONDUCT.md)
+  Vasculhe o GitHub Issues desse repositório, qualquer coisa com as tags "bug" e "help wanted" estão abertas para quem quiser resolver.
+
+- **Criar Features**
+
+  Vasculhe o GitHub Issues desse repositório, qualquer coisa com as tags "enhancement" e "help wanted" estão abertas para quem quiser implemetar.
+
+- **Enviar Feedback**
+
+  O melhor jeito de enviar feedbacks é submeter um problema em https://github.com/Ana-Schenkel/anas_bot/issues.
+
+  Se você deseja incluir uma nova feature, por favor inclua:
+
+  - Explicação detalhada de como sua feature funciona.
+  - Features de escopos simples, para facilitar a implementação.
+
+- **Criar Projeto Similar**
+
+  Siga as instruções de utilização do bot desse repositório para preparar seu ambiente de programação, crie seu próprio projeto e adicione o link https://github.com/Ana-Schenkel/Anas_Bot nos créditos do seu README.md.
 
 ## Créditos
 
-This package was created with Cookiecutter* and the `audreyr/cookiecutter-pypackage`* project template.
+Para esse projeto, foi utilizado o o template pypackage do projeto `audreyr/cookiecutter-pypackage` com Cookiecutter.
 
-.. _Cookiecutter: https://github.com/audreyr/cookiecutter
-.. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage
+- `audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage
 
 <hr>
 
