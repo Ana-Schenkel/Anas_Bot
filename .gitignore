@@ -1,3 +1,6 @@
 venv_anas_bot
 anas_bot/anas_bot/token.txt
 anas_bot/anas_bot/jogo_forca/__pycache__/
+anas_bot/anas_bot/jogo_velha/__pycache__/
+anas_bot/anas_bot/jogo_velha/estados_velha.json
+anas_bot/anas_bot/jogo_forca/estados_forca.json
