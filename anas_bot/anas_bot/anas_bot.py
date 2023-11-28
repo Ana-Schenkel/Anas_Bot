@@ -294,7 +294,13 @@ async def menu_forca(channel, jogador):
         return False
 
     # Salva os parâmetros
-    chute = len(palavra) * "_"
+    chute = ""
+    for i in range(len(palavra)):
+        if palavra[i] == " ":
+            chute += " "
+        else:
+            chute += "_"
+
     usados = []
     vida = 6
 
@@ -513,6 +519,11 @@ async def velha(channel, jogador, message):
         if jogador.name == jogadores[jogos_velha[str_jogadores][0]]:
             # Processa a jogada que o jogador deseja fazer
             msg = message.content.strip("$# ")
+            if not (msg in ["1", "2", "3", "4", "5", "6", "7", "8", "9"]):
+                await channel.send(
+                    jogador.name + ", essa não é uma opção possível no jogo da velha"
+                )
+                return
             resultado = v.jogo_da_velha(
                 jogos_velha[str_jogadores], jogadores, bot.user.name, msg
             )
