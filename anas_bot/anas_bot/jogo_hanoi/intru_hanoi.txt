@@ -1,1 +1,44 @@
-instruções para a torre de hanoi
+```
+Como funciona a torre de hanoi?
+
+Varetas:
+Existem três varetas, chamadas de "A", "B" e "C". No início, todos os discos estão empilhados na vareta "A".
+Dica -> Pense nas varetas como origem, destino e auxiliar.
+
+Discos:
+Os discos têm diferentes tamanhos e estão empilhados em ordem decrescente de tamanho, do menor no topo para o maior na base.
+
+Movimentos Permitidos:
+- Você pode mover um disco por vez.
+- Um disco maior não pode ser colocado sobre um disco menor.
+- Apenas o disco do topo de uma pilha pode ser movido.
+
+O objetivo é mover todos os discos da vareta inicial para uma vareta diferente, mantendo a ordem correta dos discos.
+
+Início:                 Fim:
+
+  1     |     |           |     |     1  
+  2     |     |           |     |     2  
+  3     |     |           |     |     3  
+----- ----- -----       ----- ----- -----
+  A     B     C           A     B     C  
+
+ 
+Como jogar a Torre de Hanói?
+
+Iniciar um novo jogo da Torre de Hanói:
+Digite $hanoi para ir ao menu e começar um novo jogo da Torre de Hanói (ou ver uma solução possível).
+
+Mover um Disco:
+Para mover um disco, utilize o formato "$% número letra", onde o número é o tamanho do disco e a letra é a vareta para a qual deseja movê-lo (A, B ou C).
+Ex:
+Para mover o disco 1 para a vareta "c", digite "$% 1c".
+
+
+  1     |     |           |     |     |  
+  2     |     |     ->    2     |     |  
+  3     |     |           3     |     1  
+----- ----- -----       ----- ----- -----
+  A     B     C           A     B     C  
+
+```
