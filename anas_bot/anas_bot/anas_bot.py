@@ -174,10 +174,9 @@ async def pede_mention(channel, jogador, titulo, descri):
 
 
 async def pede_dm(jogador, descri):
-    """Essa função recebe as características de um embed de menu com duas escolhas e retorna a resposta do usuário
+    """Essa função recebe as características de uma mensagem a ser enviada na dm e retorna a resposta do usuário
 
     Args:
-        channel (str): nome do canal de texto que solicitou as mensagens
         jogador (Member): informações do usuário que irá responder
         descri (str): descrição da mensagem enviada pelo bot
 
@@ -202,6 +201,19 @@ async def pede_dm(jogador, descri):
 
 
 async def pede_num(channel, jogador, titulo, descri):
+    """Essa função recebe as características de um embed "digite um número" e retorna a resposta do usuário
+
+    Args:
+        channel (str): nome do canal de texto que solicitou as mensagens
+        jogador (Member): informações do usuário que irá responder
+        titulo (str): title do embed
+        descri (str): descrição da mensagem
+
+    Returns:
+        int: conteúdo da resposta do usuário
+
+    """
+
     def check_num(m):
         autor = m.channel == channel and m.author == jogador
         resposta = m.content in "2 3 4 5 6 7 8 9 10 11 12 13 14"
@@ -360,6 +372,13 @@ async def velha(channel, jogador, message):
 
 
 async def bot_hanoi(jogador):
+    """Essa função resolve a torre de hanoi e envia o a solução
+
+    Args:
+        jogador (Member or str): informações do usuário ou canal para o qual a solução deve ser enviada
+
+
+    """
     # retorna para dados do início do jogo
     discos = jogos_hanoi[jogador.name][3]
     total = discos + 1
@@ -380,6 +399,7 @@ async def bot_hanoi(jogador):
             resultado[1][4],
         )
         await jogador.send(f"{resultado[0]}\n")
+        # await asyncio.sleep(20)
 
 
 async def hanoi(channel, jogador, message):
@@ -645,7 +665,18 @@ async def menu_velha(channel, jogador):
 
 
 async def menu_hanoi(channel, jogador):
-    # menu para decidir os parâmetros iniciais do jogo da forca
+    """Essa função opera o menu das configurações iniciais do jogo da Torre de Hanói
+
+    Args:
+        channel (str): nome do canal de texto que solicitou as mensagens
+        jogador (Member): informações do usuário que deseja jogar
+
+    Returns:
+        Member: nome do jogador
+        bool: caso false, não se criará um novo jogo
+
+    """
+    # menu para decidir os parâmetros iniciais do jogo da Torre de Hanói
     descri = "escolha uma opção:"
     escolhas = ("Jogar a Torre de Hanói", "Desafiar um amigo", "Ver instruções")
     res = await menu3(channel, jogador, "Menu Torre de Hanoi", descri, escolhas)
@@ -670,6 +701,7 @@ async def menu_hanoi(channel, jogador):
 
     # Desafiar Amigo
     elif res == "2":
+        # Pede para o jogador decidir o tamnaho da Torre
         descri = "digite um número entre 2 e 14 para definir a quantidade de discos."
         discos = await pede_num(channel, jogador, "Tamanho do Desafio Torre", descri)
 
@@ -862,6 +894,7 @@ async def on_message(message):
 
     # ************************************************* Torre de Hanoi *************************************************
 
+    # caso o usuário digite $velha, verifica se o usuário tem um jogo em andamento e/ou inicia novos jogos
     if message.content.startswith("$hanoi"):
         if jogador.name in jogos_hanoi:
             descri = "você já está jogando a Torre de Hanói, escolha:"
