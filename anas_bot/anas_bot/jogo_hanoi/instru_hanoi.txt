@@ -23,6 +23,7 @@ Início:                 Fim:
 ----- ----- -----       ----- ----- -----
   A     B     C           A     B     C  
 
+
  
 Como jogar a Torre de Hanói?
 
@@ -31,8 +32,7 @@ Digite $hanoi para ir ao menu e começar um novo jogo da Torre de Hanói (ou ver
 
 Mover um Disco:
 Para mover um disco, utilize o formato "$% número letra", onde o número é o tamanho do disco e a letra é a vareta para a qual deseja movê-lo (A, B ou C).
-Ex:
-Para mover o disco 1 para a vareta "c", digite "$% 1c".
+Ex: Para mover o disco 1 para a vareta "c", digite "$% 1c".
 
 
   1     |     |           |     |     |  

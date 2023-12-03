@@ -25,7 +25,7 @@ def define_varetas(discos):
     return varetas
 
 
-def desenha_hanoi(varetaA, varetaB, varetaC, discos):
+def desenha_hanoi(dados):
     """Essa função desenha o jogo de acordo com os estados de cada lista de vareta
 
     Args:
@@ -34,6 +34,12 @@ def desenha_hanoi(varetaA, varetaB, varetaC, discos):
     Returns:
         str: desenho das varetas
     """
+    # deixa os dados mais legíveis
+    varetaA = dados[0]
+    varetaB = dados[1]
+    varetaC = dados[2]
+    discos = dados[3]
+
     lista_desenho = []
     desenho = ""
     total = discos + 1
@@ -43,15 +49,25 @@ def desenha_hanoi(varetaA, varetaB, varetaC, discos):
         linha = ""
         # verifica se há disco na vareta, adiciona o disco ou um "|"
         try:
-            linha += f"  {varetaA[i]}   "
+            if varetaA[i] < 10:
+                linha += f"  {varetaA[i]}   "
+            elif varetaA[i] >= 10:
+                linha += f" {varetaA[i]}   "
+
         except IndexError:
             linha += f"  |   "
         try:
-            linha += f"  {varetaB[i]}   "
+            if varetaB[i] < 10:
+                linha += f"  {varetaB[i]}   "
+            elif varetaB[i] >= 10:
+                linha += f" {varetaB[i]}   "
         except IndexError:
             linha += f"  |   "
         try:
-            linha += f"  {varetaC[i]}   "
+            if varetaC[i] < 10:
+                linha += f"  {varetaC[i]}   "
+            elif varetaC[i] >= 10:
+                linha += f" {varetaC[i]}   "
         except IndexError:
             linha += f"  |   "
 
@@ -60,7 +76,7 @@ def desenha_hanoi(varetaA, varetaB, varetaC, discos):
     for i in range(discos, 0, -1):
         desenho += f"{lista_desenho[i]} \n"
     # adiciona linha de base e retorna
-    desenho += "----- ----- -----\n  A     B     C"
+    desenho = "```" + desenho + "----- ----- -----\n  A     B     C ```"
     return desenho
 
 
@@ -152,7 +168,7 @@ def hanoi(dados, lista_ver, disco):
     # atualiza o último disco jogado e retorna o resultado de uma jogada
     disco1 = disco
     dados = [varetaA, varetaB, varetaC, discos, disco1]
-    return (desenha_hanoi(varetaA, varetaB, varetaC, discos), dados)
+    return (desenha_hanoi(dados), dados)
 
 
 def resolver(dados):
@@ -217,8 +233,7 @@ def jogada(dados, pos):
             dados[2] = vareta
         else:
             return (
-                "Essa posição é inválida, tente novamente.\n"
-                + desenha_hanoi(varetaA, varetaB, varetaC, discos),
+                "essa posição é inválida, tente novamente.",
                 dados,
                 True,
             )
@@ -236,15 +251,13 @@ def jogada(dados, pos):
                 vareta.append(disco)
             else:
                 return (
-                    "Você não pode mexer esse disco, tente novamente.\n"
-                    + desenha_hanoi(varetaA, varetaB, varetaC, discos),
+                    "você não pode mexer esse disco, tente novamente.",
                     dados,
                     True,
                 )
         else:
             return (
-                "Você não pode colocar um disco maior em cima de um menor.\n"
-                + desenha_hanoi(varetaA, varetaB, varetaC, discos),
+                "você não pode colocar um disco maior em cima de um menor.",
                 dados,
                 True,
             )
@@ -253,12 +266,12 @@ def jogada(dados, pos):
     # verifica se o jogo acabou
     if len(varetaB) == total or len(varetaC) == total:
         return (
-            "Você ganhou!\n" + desenha_hanoi(varetaA, varetaB, varetaC, discos),
+            "você ganhou!!",
             dados,
             False,
         )
     # retorna a jogada com sucesso
-    return (desenha_hanoi(varetaA, varetaB, varetaC, discos), dados, True)
+    return (f"você moveu o disco {disco} para a vareta {vareta[1]}.", dados, True)
 
 
 def menu():
@@ -269,7 +282,7 @@ def menu():
     dados = [varetas[0], varetas[1], varetas[2], discos, disco1]
 
     jogo = jogada(dados, input())
-    print(jogo[0], jogo[1], jogo[2])
+    print(jogo[0])
     while jogo[2]:
         res = input("Digite sua jogada:\n")
         if res == "1":
