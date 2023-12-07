@@ -5,6 +5,8 @@ import json
 import os
 
 import discord
+import comandos.pede_mensagem as p
+import jogo_forca.forca_bot as forc
 import jogo_forca.forca as f
 import jogo_hanoi.torre_de_hanoi as h
 import jogo_velha.jogo_da_velha as v
@@ -57,227 +59,7 @@ jogos_velha = ler_doc("jogo_velha\\", "estados_velha.json")
 jogos_hanoi = ler_doc("jogo_hanoi\\", "estados_hanoi.json")
 
 
-# Funções assíncronas para pedir e verificar mensagens do usuário ****************************************************
-async def menu2(channel, jogador, titulo, descri, escolhas):
-    """Essa função recebe as características de um embed de menu com duas escolhas e retorna a resposta do usuário
-
-    Args:
-        channel (str): nome do canal de texto que solicitou as mensagens
-        jogador (Member): informações do usuário que irá responder
-        titulo (str): title do embed
-        descri (str): descrição do menu
-        escolhas (tuple): possíveis escolhas do usuário
-
-    Returns:
-        str: conteúdo da resposta do usuário
-
-    """
-
-    def check_menu2(m):
-        autor = m.channel == channel and m.author == jogador
-        resposta = m.content == "1" or m.content == "2"
-        return autor and resposta
-
-    embed = discord.Embed(
-        title=titulo,
-        description=f"{jogador.name}, {descri} \n 1 - {escolhas[0]} \n 2 - {escolhas[1]}",
-        color=0xFF5733,
-    )
-    await channel.send(embed=embed)
-    try:
-        msg = await bot.wait_for("message", timeout=120.0, check=check_menu2)
-    except TimeoutError:
-        await channel.send(
-            f"O tempo de responder ao {titulo} acabou {jogador.name}, tente novamente"
-        )
-        return False
-
-    return msg.content
-
-
-async def menu3(channel, jogador, titulo, descri, escolhas):
-    """Essa função recebe as características de um embed de menu com três escolhas e retorna a resposta do usuário
-
-    Args:
-        channel (str): nome do canal de texto que solicitou as mensagens
-        jogador (Member): informações do usuário que irá responder
-        titulo (str): title do embed
-        descri (str): descrição do menu
-        escolhas (tuple): possíveis escolhas do usuário
-
-    Returns:
-        str: conteúdo da resposta do usuário
-
-    """
-
-    def check_menu3(m):
-        autor = m.channel == channel and m.author == jogador
-        resposta = m.content == "1" or m.content == "2" or m.content == "3"
-        return autor and resposta
-
-    embed = discord.Embed(
-        title=titulo,
-        description=f"{jogador.name}, {descri} \n 1 - {escolhas[0]} \n 2 - {escolhas[1]} \n 3 - {escolhas[2]}",
-        color=0xFF5733,
-    )
-    await channel.send(embed=embed)
-
-    try:
-        msg = await bot.wait_for("message", timeout=120.0, check=check_menu3)
-    except TimeoutError:
-        await channel.send(
-            f"O tempo de responder ao {titulo} acabou {jogador.name}, tente novamente"
-        )
-        return False
-
-    return msg.content
-
-
-async def pede_mention(channel, jogador, titulo, descri):
-    """Essa função recebe as características de um embed que pede que o usuário marque outra pessoa
-
-    Args:
-        channel (str): nome do canal de texto que solicitou as mensagens
-        jogador (Member): informações do usuário que irá responder
-        titulo (str): title do embed
-        descri (str): descrição do embed
-
-    Returns:
-        Member: pessoa marcada pelo usuário
-
-    """
-
-    def check_mention(m):
-        autor = m.channel == channel and m.author == jogador
-        mention = m.mentions
-        if len(mention) > 1 or mention == []:
-            return False
-        else:
-            return True and autor
-
-    embed = discord.Embed(
-        title=titulo,
-        description=f"{jogador.name}, {descri} (marque com @nome)",
-        color=0xFF5733,
-    )
-    await channel.send(embed=embed)
-    try:
-        pessoa = await bot.wait_for("message", timeout=120.0, check=check_mention)
-        pessoa = pessoa.mentions
-        pessoa = pessoa[0]
-    except TimeoutError:
-        await channel.send(
-            f"O tempo de responder ao {titulo} acabou {jogador.name}, tente novamente"
-        )
-        return False
-
-    return pessoa
-
-
-async def pede_dm(jogador, descri):
-    """Essa função recebe as características de uma mensagem a ser enviada na dm e retorna a resposta do usuário
-
-    Args:
-        jogador (Member): informações do usuário que irá responder
-        descri (str): descrição da mensagem enviada pelo bot
-
-    Returns:
-        str: conteúdo da resposta do usuário
-
-    """
-    await jogador.send(descri)
-    try:
-        palavra = await bot.wait_for(
-            "message",
-            timeout=300.0,
-            check=lambda x: x.channel == jogador.dm_channel and x.author == jogador,
-        )
-        palavra = palavra.content
-    except TimeoutError:
-        await jogador.send(
-            f"O tempo de digitar a palavra acabou {jogador.name}, tente novamente"
-        )
-        return False
-    return palavra
-
-
-async def pede_num(channel, jogador, titulo, descri):
-    """Essa função recebe as características de um embed "digite um número" e retorna a resposta do usuário
-
-    Args:
-        channel (str): nome do canal de texto que solicitou as mensagens
-        jogador (Member): informações do usuário que irá responder
-        titulo (str): title do embed
-        descri (str): descrição da mensagem
-
-    Returns:
-        int: conteúdo da resposta do usuário
-
-    """
-
-    def check_num(m):
-        autor = m.channel == channel and m.author == jogador
-        resposta = m.content in "2 3 4 5 6 7 8 9 10 11 12 13 14"
-        return autor and resposta
-
-    embed = discord.Embed(
-        title=titulo,
-        description=f"{jogador.name}, {descri}",
-        color=0xFF5733,
-    )
-    await channel.send(embed=embed)
-    try:
-        msg = await bot.wait_for("message", timeout=120.0, check=check_num)
-    except TimeoutError:
-        await channel.send(
-            f"O tempo de responder ao {titulo} acabou {jogador.name}, tente novamente"
-        )
-        return False
-
-    return int(msg.content)
-
-
 # Funções assíncronas de processamento dos jogos *********************************************************************
-async def forca(channel, jogador, message):
-    """Essa função verifica se o usuário pode jogar e testa a letra digitada pelo jogador, atualizando o estado do jogo
-
-    Args:
-        channel (str): nome do canal de texto das mensagens
-        jogador (Member): informações do usuário que deseja jogar
-        message (Message): mensagem enviada no discord
-    """
-
-    # verifica se o jogador tem um jogo salvo
-    if jogador.name in jogos_forca:
-        msg = message.content.strip("$ ")
-        resultado = f.forca(
-            jogos_forca[jogador.name], msg
-        )  # função que processa a letra
-
-        await channel.send(resultado[0])
-        jogos_forca[jogador.name] = resultado[1]
-
-        desenho = f.desenha_forca(jogos_forca[jogador.name])
-        await channel.send(f"**Forca de {jogador.name}** {desenho}")
-
-        # Verfica se o jogo acabou e retira os dados do jogo
-        if resultado[2] == False:
-            jogos_forca.pop(jogador.name)
-
-        # Atualiza o jogo no arquivo
-        doc = open(
-            user + "\\anas_bot\\anas_bot\\jogo_forca\\estados_forca.json",
-            encoding="utf-8",
-            mode="w",
-        )
-        json.dump(jogos_forca, doc)
-        doc.close()
-    # Pede para o jogador criar um jogo novo
-    else:
-        await channel.send(
-            jogador.name
-            + ", você ainda não iniciou um novo jogo de forca, digite '$forca'!"
-        )
 
 
 async def bot_velha(channel, jogadores):
@@ -372,7 +154,7 @@ async def velha(channel, jogador, message):
         )
 
 
-async def bot_hanoi(jogador):
+async def bot_hanoi(jogador, discos):
     """Essa função resolve a torre de hanoi e envia o a solução
 
     Args:
@@ -381,7 +163,6 @@ async def bot_hanoi(jogador):
 
     """
     # retorna para dados do início do jogo
-    discos = jogos_hanoi[jogador.name][3]
     total = discos + 1
     varetas = h.define_varetas(discos)
     dados = [varetas[0], varetas[1], varetas[2], discos, 0]
@@ -439,116 +220,6 @@ async def hanoi(channel, jogador, message):
 
 
 # Funções assíncronas que definem os parâmetros inciais dos jogos ****************************************************
-async def menu_forca(channel, jogador):
-    """Essa função opera o menu das configurações iniciais do jogo da forca
-
-    Args:
-        channel (str): nome do canal de texto que solicitou as mensagens
-        jogador (Member): informações do usuário que deseja jogar
-
-    Returns:
-        str: member que irá jogar
-        bool: caso false, não se criará um novo jogo
-
-    """
-    # menu para decidir os parâmetros iniciais do jogo da forca
-    descri = "escolha uma opção:"
-    escolhas = ("Sortear uma palavra", "Desafiar um amigo", "Ver instruções")
-    res = await menu3(channel, jogador, "Menu Forca", descri, escolhas)
-    if res == False:
-        return False
-
-    # Sortear Palavra
-    if res == "1":
-        descri = "escolha um nível:"
-        escolhas = ("Fácil", "Médio", "Difícil")
-        nivel = await menu3(channel, jogador, "Sorteia Forca", descri, escolhas)
-        if nivel == False:
-            return False
-
-        await channel.send(f"Olá {jogador}, uma palavra de nivel {nivel} foi sorteada!")
-        palavra = f.sorteia_palavra(nivel)
-
-    # Desafiar Amigo
-    elif res == "2":
-        # Pede uma palavra na DM
-        # await jogador.send("Digite a palavra que você deseja que adivinhem na forca!")
-        # try:
-        #     palavra = await bot.wait_for(
-        #         "message",
-        #         timeout=300.0,
-        #         check=lambda x: x.channel == jogador.dm_channel and x.author == jogador,
-        #     )
-        # except TimeoutError:
-        #     await channel.send(
-        #         f"O tempo de digitar a palavra acabou {jogador.name}, tente novamente"
-        #     )
-        #     return False
-
-        palavra = await pede_dm(
-            jogador, "Digite a palavra que você deseja que adivinhem na forca!"
-        )
-        if palavra == False:
-            return False
-
-        # Pede o nome do jogador
-        descri = "digite quem você deseja desafiar"
-        jogador1 = await pede_mention(channel, jogador, "Desafio forca", descri)
-        if jogador1 == False:
-            return False
-        jogador = jogador1
-
-        # Verifica quem foi desafiado e o direciona
-        # Já estava jogando antes
-        if jogador.name in jogos_forca:
-            await channel.send(f"{jogador} você foi desafiado para o jogo da forca!")
-            # Pergunta se a pessoa quer o desafiou ou não
-            descri = "você já estava com um jogo em andamento, escolha:"
-            escolhas = (
-                "Aceitar novo desafio",
-                "Retomar jogo anterior e desistir do desafio",
-            )
-            res = await menu2(
-                channel, jogador, "Aceitar desafio da forca?", descri, escolhas
-            )
-            if res == False:
-                return False
-            # Retorna caso a pessoa não aceite
-            if res == "2":
-                return jogador
-        # Desafiou o bot
-        elif jogador == bot.user:
-            await channel.send(
-                "Você não pode me desafiar! (eu já sei a palavra huahua)"
-            )
-            return False
-        # Desafiou uma pessoa nova
-        else:
-            await channel.send(f"{jogador} você foi desafiado para o jogo da forca!")
-
-    # Ver Instruções
-    elif res == "3":
-        instru = ler_doc("jogo_forca\\", "instru_forca.txt")
-        await channel.send(instru)
-        return False
-
-    # Salva os parâmetros
-    chute = ""
-    for i in range(len(palavra)):
-        if palavra[i] == " ":
-            chute += " "
-        else:
-            chute += "_"
-
-    usados = []
-    vida = 6
-
-    jogos_forca.update({jogador.name: [palavra, chute, usados, vida]})
-    doc = open(user + "\\anas_bot\\anas_bot\\jogo_forca\\estados_forca.json", "w")
-    json.dump(jogos_forca, doc)
-    doc.close()
-
-    return jogador
 
 
 async def menu_velha(channel, jogador):
@@ -566,7 +237,7 @@ async def menu_velha(channel, jogador):
     # menu para decidir os parâmetros iniciais do jogo da forca
     descri = "escolha uma opção:"
     escolhas = ("Jogar com o bot", "Desafiar um amigo", "Ver instruções")
-    res = await menu3(channel, jogador, "Menu Jogo da Velha", descri, escolhas)
+    res = await p.menu3(channel, jogador, "Menu Jogo da Velha", descri, escolhas, bot)
     if res == False:
         return False
 
@@ -578,7 +249,9 @@ async def menu_velha(channel, jogador):
     # Adiciona o outro jogador como a pessoa marcada
     elif res == "2":
         descri = "marque o amigo com quem vai jogar"
-        jogador1 = await pede_mention(channel, jogador, "Desafio da Velha", descri)
+        jogador1 = await p.pede_mention(
+            channel, jogador, "Desafio da Velha", descri, bot
+        )
         if jogador1 == False:
             return False
         await channel.send(f"{jogador1} foi desafiado para o jogo da velha!")
@@ -594,8 +267,8 @@ async def menu_velha(channel, jogador):
                 "Aceitar novo desafio",
                 "Retomar jogo anterior e desistir do desafio",
             )
-            res = await menu2(
-                channel, jogador1, "Aceitar desafio da velha?", descri, escolhas
+            res = await p.menu2(
+                channel, jogador1, "Aceitar desafio da velha?", descri, escolhas, bot
             )
             if res == False:
                 return False
@@ -612,7 +285,7 @@ async def menu_velha(channel, jogador):
     # Menu para decidir a ordem de quem jogará primeiro
     descri = "escolha uma opção:"
     escolhas = ("Sortear ordem de jogada", "Escolher o primeiro jogador")
-    res = await menu2(channel, jogador, "Sortear Velha", descri, escolhas)
+    res = await p.menu2(channel, jogador, "Sortear Velha", descri, escolhas, bot)
     if res == False:
         return False
     vez = ""
@@ -629,8 +302,8 @@ async def menu_velha(channel, jogador):
     # Escolher quem joga primeiro
     elif res == "2":
         descri = "escreva quem irá jogar primeiro"
-        primeiro_jogador = await pede_mention(
-            channel, jogador, "Ordem de jogada", descri
+        primeiro_jogador = await p.pede_mention(
+            channel, jogador, "Ordem de jogada", descri, bot
         )
         if primeiro_jogador == False:
             return False
@@ -680,7 +353,7 @@ async def menu_hanoi(channel, jogador):
     # menu para decidir os parâmetros iniciais do jogo da Torre de Hanói
     descri = "escolha uma opção:"
     escolhas = ("Jogar a Torre de Hanói", "Desafiar um amigo", "Ver instruções")
-    res = await menu3(channel, jogador, "Menu Torre de Hanoi", descri, escolhas)
+    res = await p.menu3(channel, jogador, "Menu Torre de Hanoi", descri, escolhas, bot)
     if res == False:
         return False
 
@@ -688,7 +361,7 @@ async def menu_hanoi(channel, jogador):
     if res == "1":
         descri = "escolha um nível:"
         escolhas = ("Fácil", "Médio", "Difícil")
-        nivel = await menu3(channel, jogador, "Nível da Torre", descri, escolhas)
+        nivel = await p.menu3(channel, jogador, "Nível da Torre", descri, escolhas, bot)
         if nivel == False:
             return False
 
@@ -704,11 +377,13 @@ async def menu_hanoi(channel, jogador):
     elif res == "2":
         # Pede para o jogador decidir o tamnaho da Torre
         descri = "digite um número entre 2 e 14 para definir a quantidade de discos."
-        discos = await pede_num(channel, jogador, "Tamanho do Desafio Torre", descri)
+        discos = await p.pede_num(
+            channel, jogador, "Tamanho do Desafio Torre", descri, bot
+        )
 
         # Pede o nome do jogador
         descri = "digite quem você deseja desafiar."
-        jogador1 = await pede_mention(channel, jogador, "Desafio Torre", descri)
+        jogador1 = await p.pede_mention(channel, jogador, "Desafio Torre", descri, bot)
         if jogador1 == False:
             return False
         jogador = jogador1
@@ -725,8 +400,8 @@ async def menu_hanoi(channel, jogador):
                 "Aceitar novo desafio",
                 "Retomar jogo anterior e desistir do desafio",
             )
-            res = await menu2(
-                channel, jogador, "Aceitar desafio da Torre?", descri, escolhas
+            res = await p.menu2(
+                channel, jogador, "Aceitar desafio da Torre?", descri, escolhas, bot
             )
             if res == False:
                 return False
@@ -735,7 +410,10 @@ async def menu_hanoi(channel, jogador):
                 return jogador
         # Desafiou o bot
         elif jogador == bot.user:
-            await bot_hanoi(channel)
+            await channel.send("Eu sempre sei resolver esse desafio!")
+            # resolve a torre
+            await bot_hanoi(channel, discos)
+
             return False
 
     # Ver Instruções
@@ -758,6 +436,95 @@ async def menu_hanoi(channel, jogador):
     return jogador
 
 
+# Funções assíncronas para processar a mensagem enviada **************************************************************
+
+
+async def verifica_velha(channel, jogador):
+    # verifica se já existe um jogo com esse usuário
+    jogadores = False
+    str_jogadores = ""
+    for i in jogos_velha:
+        if jogador.name in i:
+            jogadores = tuple(i.split(","))
+            str_jogadores = i
+    # Jogo em andamento
+    if jogadores:
+        descri = "você já está jogando o jogo da velha, escolha:"
+        escolhas = ("Continuar jogo antigo", "Ir para menu")
+        res = await p.menu2(
+            channel, jogador, "Jogando o jogo da velha", descri, escolhas, bot
+        )
+        if res == False:
+            return False
+        # Volta para jogo antigo
+        if res == "1":
+            desenho = v.imprime_grade(jogos_velha[str_jogadores][1])
+            await channel.send(
+                f"**Jogo da Velha de {jogadores[0]} e {jogadores[1]}** \n{jogos_velha[str_jogadores][2]}"
+            )
+            await channel.send(desenho)
+        # Vai para menu
+        elif res == "2":
+            jogadores = await menu_velha(channel, jogador)
+            if jogadores:
+                if bot.user.name == jogadores[jogos_velha[str_jogadores][0]]:
+                    await bot_velha(channel, jogadores)
+    # Novo jogo
+    else:
+        jogadores = await menu_velha(channel, jogador)
+        if jogadores:
+            if (
+                bot.user.name
+                == jogadores[jogos_velha[jogadores[0] + "," + jogadores[1]][0]]
+            ):
+                await bot_velha(channel, jogadores)
+
+
+async def verifica_hanoi(channel, jogador):
+    if jogador.name in jogos_hanoi:
+        descri = "você já está jogando a Torre de Hanói, escolha:"
+        escolhas = (
+            "Continuar jogo antigo",
+            "Ver uma possível solução",
+            "Ir para menu",
+        )
+        res = await p.menu3(channel, jogador, "Jogando a torre", descri, escolhas, bot)
+        if res == False:
+            return False
+        # Volta para o jogo antigo
+        if res == "1":
+            desenho = h.desenha_hanoi(jogos_hanoi[jogador.name])
+            await channel.send(
+                f"**Torre de {jogador.name}**\nObs: digite '$% discoVareta' para fazer sua jogada. {desenho}"
+            )
+        # Manda a resolução no privado
+        elif res == "2":
+            await bot_hanoi(jogador, jogos_hanoi[jogador.name][3])
+            await channel.send(
+                f"{jogador.name}, a solução foi enviada para você, tente continuar seu jogo:"
+            )
+            desenho = h.desenha_hanoi(jogos_hanoi[jogador.name])
+            await channel.send(
+                f"**Torre de {jogador.name}**\nObs: digite '$% discoVareta' para fazer sua jogada. {desenho}"
+            )
+        # Vai para menu
+        elif res == "3":
+            jogador = await menu_hanoi(channel, jogador)
+            if jogador:
+                desenho = h.desenha_hanoi(jogos_hanoi[jogador.name])
+                await channel.send(
+                    f"**Torre de {jogador.name}**\nObs: digite '$% discoVareta' para fazer sua jogada. {desenho}"
+                )
+    # Novo jogo
+    else:
+        jogador = await menu_hanoi(channel, jogador)
+        if jogador:
+            desenho = h.desenha_hanoi(jogos_hanoi[jogador.name])
+            await channel.send(
+                f"**Torre de {jogador.name}**\nObs: digite '$% discoVareta' para fazer sua jogada. {desenho}"
+            )
+
+
 # Inicialização do bot ***********************************************************************************************
 @bot.event
 async def on_ready():
@@ -773,14 +540,8 @@ async def help(ctx):
         ctx (str): canal de texto da mensagem enviada
 
     """
-    ajuda = open(
-        user + "\\anas_bot\\anas_bot\\comandos\\help.txt",
-        encoding="utf-8",
-        mode="r",
-    )
-    ajuda_ = ajuda.read()
-    ajuda.close()
-    await ctx.send(ajuda_)
+    ajuda = ler_doc("comandos\\", "help.txt")
+    await ctx.send(ajuda)
 
 
 @bot.command()
@@ -791,14 +552,8 @@ async def info(ctx):
         ctx (str): canal de texto da mensagem enviada
 
     """
-    info = open(
-        user + "\\anas_bot\\anas_bot\\comandos\\info.txt",
-        encoding="utf-8",
-        mode="r",
-    )
-    info_ = info.read()
-    info.close()
-    await ctx.send(info_)
+    info = ler_doc("comandos\\", "info.txt")
+    await ctx.send(info)
 
 
 # Bloco para processar toda mensagem enviada ************************************************************************
@@ -816,78 +571,21 @@ async def on_message(message):
 
     # ************************************************* Jogo Forca *************************************************
 
+    global jogos_forca
+
     # caso o usuário digite $forca, verifica se o usuário tem um jogo em andamento e/ou inicia novos jogos
     if message.content.startswith("$forca"):
-        # Jogo em andamento
-        if jogador.name in jogos_forca:
-            descri = "você já está jogando a forca, escolha:"
-            escolhas = ("Continuar jogo antigo", "Ir para menu")
-            res = await menu2(channel, jogador, "Jogando a forca", descri, escolhas)
-            if res == False:
-                return False
-            # Volta para o jogo antigo
-            if res == "1":
-                desenho = f.desenha_forca(jogos_forca[jogador.name])
-                await channel.send(f"**Forca de {jogador.name}** {desenho}")
-            # Vai para menu
-            elif res == "2":
-                jogador = await menu_forca(channel, jogador)
-                if jogador:
-                    desenho = f.desenha_forca(jogos_forca[jogador.name])
-                    await channel.send(f"**Forca de {jogador.name}**{desenho}")
-        # Novo jogo
-        else:
-            jogador = await menu_forca(channel, jogador)
-            if jogador:
-                desenho = f.desenha_forca(jogos_forca[jogador.name])
-                await channel.send(f"**Forca de {jogador.name}**{desenho}")
+        jogos_forca = await forc.verifica_forca(channel, jogador, jogos_forca, bot)
 
     # faz rodar a forca caso o usuário digite $$letra
     if message.content.startswith("$$"):
-        await forca(channel, jogador, message)
+        jogos_forca = await forc.forca(channel, jogador, message, jogos_forca)
 
     # ************************************************* Jogo da Velha *************************************************
 
     # caso o usuário digite $velha, verifica se o usuário tem um jogo em andamento e/ou inicia novos jogos
     if message.content.startswith("$velha"):
-        # verifica se já existe um jogo com esse usuário
-        jogadores = False
-        str_jogadores = ""
-        for i in jogos_velha:
-            if jogador.name in i:
-                jogadores = tuple(i.split(","))
-                str_jogadores = i
-        # Jogo em andamento
-        if jogadores:
-            descri = "você já está jogando o jogo da velha, escolha:"
-            escolhas = ("Continuar jogo antigo", "Ir para menu")
-            res = await menu2(
-                channel, jogador, "Jogando o jogo da velha", descri, escolhas
-            )
-            if res == False:
-                return False
-            # Volta para jogo antigo
-            if res == "1":
-                desenho = v.imprime_grade(jogos_velha[str_jogadores][1])
-                await channel.send(
-                    f"**Jogo da Velha de {jogadores[0]} e {jogadores[1]}** \n{jogos_velha[str_jogadores][2]}"
-                )
-                await channel.send(desenho)
-            # Vai para menu
-            elif res == "2":
-                jogadores = await menu_velha(channel, jogador)
-                if jogadores:
-                    if bot.user.name == jogadores[jogos_velha[str_jogadores][0]]:
-                        await bot_velha(channel, jogadores)
-        # Novo jogo
-        else:
-            jogadores = await menu_velha(channel, jogador)
-            if jogadores:
-                if (
-                    bot.user.name
-                    == jogadores[jogos_velha[jogadores[0] + "," + jogadores[1]][0]]
-                ):
-                    await bot_velha(channel, jogadores)
+        await verifica_velha(channel, jogador)
 
     # faz rodar o jogo da velha caso o usuário digite $#número
     if message.content.startswith("$#"):
@@ -897,48 +595,7 @@ async def on_message(message):
 
     # caso o usuário digite $velha, verifica se o usuário tem um jogo em andamento e/ou inicia novos jogos
     if message.content.startswith("$hanoi"):
-        if jogador.name in jogos_hanoi:
-            descri = "você já está jogando a Torre de Hanói, escolha:"
-            escolhas = (
-                "Continuar jogo antigo",
-                "Ver uma possível solução",
-                "Ir para menu",
-            )
-            res = await menu3(channel, jogador, "Jogando a torre", descri, escolhas)
-            if res == False:
-                return False
-            # Volta para o jogo antigo
-            if res == "1":
-                desenho = h.desenha_hanoi(jogos_hanoi[jogador.name])
-                await channel.send(
-                    f"**Torre de {jogador.name}**\nObs: digite '$% discoVareta' para fazer sua jogada. {desenho}"
-                )
-            # Manda a resolução no privado
-            elif res == "2":
-                await bot_hanoi(jogador)
-                await channel.send(
-                    f"{jogador.name}, a solução foi enviada para você, tente continuar seu jogo:"
-                )
-                desenho = h.desenha_hanoi(jogos_hanoi[jogador.name])
-                await channel.send(
-                    f"**Torre de {jogador.name}**\nObs: digite '$% discoVareta' para fazer sua jogada. {desenho}"
-                )
-            # Vai para menu
-            elif res == "3":
-                jogador = await menu_hanoi(channel, jogador)
-                if jogador:
-                    desenho = h.desenha_hanoi(jogos_hanoi[jogador.name])
-                    await channel.send(
-                        f"**Torre de {jogador.name}**\nObs: digite '$% discoVareta' para fazer sua jogada. {desenho}"
-                    )
-        # Novo jogo
-        else:
-            jogador = await menu_hanoi(channel, jogador)
-            if jogador:
-                desenho = h.desenha_hanoi(jogos_hanoi[jogador.name])
-                await channel.send(
-                    f"**Torre de {jogador.name}**\nObs: digite '$% discoVareta' para fazer sua jogada. {desenho}"
-                )
+        await verifica_hanoi(channel, jogador)
 
     # faz rodar o jogo da velha caso o usuário digite $#número
     if message.content.startswith("$%"):
