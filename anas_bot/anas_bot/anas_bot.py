@@ -1,5 +1,6 @@
 # """Main module."""
 
+import asyncio
 import json
 import os
 
@@ -399,7 +400,7 @@ async def bot_hanoi(jogador):
             resultado[1][4],
         )
         await jogador.send(f"{resultado[0]}\n")
-        # await asyncio.sleep(20)
+        await asyncio.sleep(1)
 
 
 async def hanoi(channel, jogador, message):
