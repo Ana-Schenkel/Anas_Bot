@@ -1,6 +1,56 @@
-# Esse módulo reune funções assíncronas para pedir e verificar mensagens do usuário
+# Esse módulo reune funções para ler e salvar arquivos e funções assíncronas para pedir e verificar mensagens do usuário
 
+import json
+import os
 import discord
+
+
+def ler_doc(pasta, arquivo):
+    """Essa função lê um arquivo e retorna o seu conteúdo
+
+    Args:
+        pasta (str): pasta do arquivo  com '\\'
+        arquivo (str): nome do arquivo com o tipo
+
+    Returns:
+        str: conteúdo do arquivo .txt
+        dict: conteúdo do arquivo .json
+
+    """
+    user = os.getcwd()
+    try:
+        doc = open(
+            user + "\\anas_bot\\anas_bot\\" + pasta + arquivo,
+            encoding="utf-8",
+            mode="r",
+        )
+        if "json" in arquivo:
+            doc_cont = json.load(doc)
+        else:
+            doc_cont = doc.read()
+        doc.close()
+    except:
+        doc = open(
+            user + "\\anas_bot\\anas_bot\\" + pasta + arquivo,
+            encoding="utf-8",
+            mode="w",
+        )
+        doc.write('{"arquivo foi resetado": []}')
+        print("O arquivo " + arquivo + " foi resetado, confira!")
+        doc_cont = {}
+
+    return doc_cont
+
+
+def salva_json(dicionario, pasta, arquivo):
+    user = os.getcwd()
+    doc = open(
+        user + "\\anas_bot\\anas_bot\\" + pasta + arquivo,
+        encoding="utf-8",
+        mode="w",
+    )
+    json.dump(dicionario, doc)
+    doc.close()
 
 
 async def menu2(channel, jogador, titulo, descri, escolhas, bot):

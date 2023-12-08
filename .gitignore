@@ -1,6 +1,5 @@
 venv_anas_bot
 anas_bot/anas_bot/token.txt
-anas_bot/anas_bot/__pycache__/
 anas_bot/anas_bot/comandos/__pycache__/
 anas_bot/anas_bot/jogo_forca/__pycache__/
 anas_bot/anas_bot/jogo_velha/__pycache__/

@@ -1,59 +1,8 @@
 # Esse módulo reune funções assíncronas para processar os menus de escolha e o jogo da Forca no discord
 
-import json
-import os
-
 import discord
 from comandos.pede_mensagem import *
 import jogo_forca.forca as f
-
-
-def ler_doc(pasta, arquivo):
-    """Essa função lê um arquivo e retorna o seu conteúdo
-
-    Args:
-        pasta (str): pasta do arquivo  com '\\'
-        arquivo (str): nome do arquivo com o tipo
-
-    Returns:
-        str: conteúdo do arquivo .txt
-        dict: conteúdo do arquivo .json
-
-    """
-    user = os.getcwd()
-    try:
-        doc = open(
-            user + "\\anas_bot\\anas_bot\\" + pasta + arquivo,
-            encoding="utf-8",
-            mode="r",
-        )
-        if "json" in arquivo:
-            doc_cont = json.load(doc)
-        else:
-            doc_cont = doc.read()
-        doc.close()
-    except:
-        doc = open(
-            user + "\\anas_bot\\anas_bot\\" + pasta + arquivo,
-            encoding="utf-8",
-            mode="w",
-        )
-        doc.write('{"arquivo foi resetado": []}')
-        print("O arquivo " + arquivo + " foi resetado, confira!")
-        doc_cont = {}
-
-    return doc_cont
-
-
-def salva_json(jogos_forca):
-    user = os.getcwd()
-    doc = open(
-        user + "\\anas_bot\\anas_bot\\jogo_forca\\estados_forca.json",
-        encoding="utf-8",
-        mode="w",
-    )
-    json.dump(jogos_forca, doc)
-    doc.close()
 
 
 async def forca(channel, jogador, message, jogos_forca):
@@ -83,7 +32,7 @@ async def forca(channel, jogador, message, jogos_forca):
             jogos_forca.pop(jogador.name)
 
         # Atualiza o jogo no arquivo
-        salva_json(jogos_forca)
+        salva_json(jogos_forca, "jogo_forca\\", "estados_forca.json")
 
     # Pede para o jogador criar um jogo novo
     else:
@@ -185,7 +134,7 @@ async def menu_forca(channel, jogador, jogos_forca, bot):
     vida = 6
 
     jogos_forca.update({jogador.name: [palavra, chute, usados, vida]})
-    salva_json(jogos_forca)
+    salva_json(jogos_forca, "jogo_forca\\", "estados_forca.json")
 
     return (jogador, jogos_forca)
 

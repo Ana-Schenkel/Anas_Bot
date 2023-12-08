@@ -38,7 +38,6 @@ def faz_jogada(jogador, jogadores, grade, bot, mensagem):
     """
     # vez do bot
     if bot == jogadores[jogador]:
-        print(jogadores[jogador], "jogou:")
         # duas varíaveis para apoiar o processamento da jogada: cópia da grade e
         # verificador de vezes em que todos escolhas foram percorridos
         grade_apoio = grade.copy()
