@@ -5,6 +5,10 @@ import os
 import discord
 
 
+import json
+import os
+
+
 def ler_doc(pasta, arquivo):
     """Essa função lê um arquivo e retorna o seu conteúdo
 
@@ -17,10 +21,12 @@ def ler_doc(pasta, arquivo):
         dict: conteúdo do arquivo .json
 
     """
-    user = os.getcwd()
+    path = os.path.dirname(__file__)
+    path = path.rstrip("comandos")
+
     try:
         doc = open(
-            user + "\\anas_bot\\anas_bot\\" + pasta + arquivo,
+            path + pasta + arquivo,
             encoding="utf-8",
             mode="r",
         )
@@ -31,7 +37,7 @@ def ler_doc(pasta, arquivo):
         doc.close()
     except:
         doc = open(
-            user + "\\anas_bot\\anas_bot\\" + pasta + arquivo,
+            path + pasta + arquivo,
             encoding="utf-8",
             mode="w",
         )
@@ -43,9 +49,10 @@ def ler_doc(pasta, arquivo):
 
 
 def salva_json(dicionario, pasta, arquivo):
-    user = os.getcwd()
+    path = os.path.dirname(__file__)
+    path = path.rstrip("comandos")
     doc = open(
-        user + "\\anas_bot\\anas_bot\\" + pasta + arquivo,
+        path + pasta + arquivo,
         encoding="utf-8",
         mode="w",
     )

@@ -18,9 +18,9 @@ def sorteia_palavra(nivel):
     """
 
     # abre o arquivo de acordo com o usuário
-    user = os.getcwd()
+    path = os.path.dirname(__file__)
     doc_palavras = open(
-        user + "\\anas_bot\\anas_bot\\jogo_forca\\palavras.txt",
+        path + "\\palavras.txt",
         encoding="utf-8",
         mode="r",
     )
