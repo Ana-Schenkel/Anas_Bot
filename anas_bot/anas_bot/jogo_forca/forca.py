@@ -1,10 +1,23 @@
+"""
+Módulo das funções síncronas para o jogo da forca, inclui a lógica fundamental para o funcionamento do jogo.
+
+Variável global:
+    tuple : tupla_forca
+
+Funções:
+    sorteia_palavra(nivel = str)
+    retira_acento(palavra = str)
+    letra_certa(letra = str, palavra = str, chute = str)
+    desenha_forca(dados = list)
+    forca(dados = list, mensagem = str)
+"""
 #  |
 #  |_0
 #   /|\
 #   / \
 
 import os
-from random import *
+from random import randint
 
 
 def sorteia_palavra(nivel):
@@ -17,14 +30,6 @@ def sorteia_palavra(nivel):
         str: palavra sorteada do arquivo
     """
 
-    # abre o arquivo de acordo com o usuário
-    path = os.path.dirname(__file__)
-    doc_palavras = open(
-        path + "\\palavras.txt",
-        encoding="utf-8",
-        mode="r",
-    )
-
     # decide as linhas a serem sorteadas de acordo com o nível
     if nivel == "1":
         linha = randint(1, 30)
@@ -33,15 +38,17 @@ def sorteia_palavra(nivel):
     elif nivel == "3":
         linha = randint(65, 93)
 
-    # lê o documento até chegar na linha sorteada
-    contador = 0
-    for i in doc_palavras:
-        if contador == linha:
-            palavra = i.strip("\n")
-            # print(palavra)
-            break
-        contador += 1
-    doc_palavras.close()
+    # abre o arquivo de acordo com o usuário
+    path = os.path.dirname(__file__)
+    with open(path + "\\palavras.txt", encoding="utf-8", mode="r") as doc_palavras:
+        # lê o documento até chegar na linha sorteada
+        contador = 0
+        for i in doc_palavras:
+            if contador == linha:
+                palavra = i.strip("\n")
+                # print(palavra)
+                break
+            contador += 1
 
     return palavra
 
@@ -81,19 +88,21 @@ def letra_certa(letra, palavra, chute):
         str: palavra formada com a nova letra ou sílaba testada
     """
     # variável auxiliar para o index da letra ou sílaba testada na palavra
-    i = 0
+    index_silaba = 0
     # repete a ação pela quantidade de vezes que a letra ou sílaba aparece na palavra
-    for vezes in range(palavra.count(letra)):
+    vezes = 0
+    while vezes != palavra.count(letra):
         # i recebe o index da primeira aparição da letra ou sílaba a partir do i anterior
-        i = palavra.index(letra, i)
+        index_silaba = palavra.index(letra, index_silaba)
         # percorre todos os index das letras da sílaba
-        for j in range(len(letra)):
+        for index_letra in range(len(letra)):
             # o index é a soma do index da letra ou sílaba na palavra e do index da letra na sílaba
-            index = i + j
+            index = index_silaba + index_letra
             # substitui o espaço em branco pela letra testada
-            chute = chute[:index] + letra[j] + chute[index + 1 :]
+            chute = chute[:index] + letra[index_letra] + chute[index + 1 :]
         # soma 1 ao i atual para ler a próxima aparição da palavra
-        i += 1
+        index_silaba += 1
+        vezes += 1
 
     return chute
 
@@ -206,4 +215,6 @@ tupla_forca = (
 )
 
 if __name__ == "__main__":
-    print(forca(input("Insira uma lista [palavra, chute, usados, vida]").split(",")))
+    print(
+        "Infelizamente, esse jogo está adaptado para o discord e não para o terminal."
+    )

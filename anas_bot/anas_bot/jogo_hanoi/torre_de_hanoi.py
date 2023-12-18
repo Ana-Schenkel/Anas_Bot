@@ -1,3 +1,13 @@
+"""
+Módulo das funções síncronas para o jogo da Torre de Hanói, inclui a lógica fundamental para o funcionamento do jogo.
+
+Funções:
+    define_varetas(discos = int)
+    desenha_hanoi(dados = list)
+    hanoi(dados = list, lista_ver = list, disco = int)
+    resolver(dados = list)
+    jogada(dados = list, pos = tuple)
+"""
 #
 #   |     |     |
 #   2     |     |
@@ -15,8 +25,8 @@ def define_varetas(discos):
         list: listas de cada vareta
     """
     varetas = [[], [], []]
-    # cada lista recebe um disco de base, de valor maior que o último disco jogável
-    varetas[0] = [i for i in range(discos, 0, -1)]
+    # cada lista recebe um disco de base, de valor maior que o último disco jogável, para evitar erros de índice
+    varetas[0] = list(range(discos, 0, -1))
     total = len(varetas[0]) + 1
     varetas[0].insert(0, total)
     varetas[1] = [total]
@@ -29,7 +39,7 @@ def desenha_hanoi(dados):
     """Essa função desenha o jogo de acordo com os estados de cada lista de vareta
 
     Args:
-        discos (int): quantidade de discos
+        dados (list): lista com dados do jogo, inclui as listas das varetas, o total de discos e o último disco jogado
 
     Returns:
         str: desenho das varetas
@@ -55,21 +65,21 @@ def desenha_hanoi(dados):
                 linha += f" {varetaA[i]}   "
 
         except IndexError:
-            linha += f"  |   "
+            linha += "  |   "
         try:
             if varetaB[i] < 10:
                 linha += f"  {varetaB[i]}   "
             elif varetaB[i] >= 10:
                 linha += f" {varetaB[i]}   "
         except IndexError:
-            linha += f"  |   "
+            linha += "  |   "
         try:
             if varetaC[i] < 10:
                 linha += f"  {varetaC[i]}   "
             elif varetaC[i] >= 10:
                 linha += f" {varetaC[i]}   "
         except IndexError:
-            linha += f"  |   "
+            linha += "  |   "
 
         lista_desenho.append(linha)
     # ordena as linhas
@@ -81,15 +91,16 @@ def desenha_hanoi(dados):
 
 
 def hanoi(dados, lista_ver, disco):
-    """Essa função resolve a torre de hanoi
+    """Essa função resolve uma jogada da torre de hanoi, de acordo com o estado do jogo
+    (não avança se o estado do jogo estiver diferente do 'ideal')
 
     Args:
-        dados (list): lista com os dados do jogo, incluindo as listas das varetas, a quantidade total de discos e o último disco jogado
+        dados (list): lista com dados do jogo, inclui as listas das varetas, o total de discos e o último disco jogado
         lista_ver: lista de bool para verificar se cada condição já foi feita
         disco: disco que está tentando mover
 
     Returns:
-        str: todas as jogadas até chegar na solução
+        str: a próxima jogada certa
     """
     # torna os dados mais legíveis
     varetaA = dados[0]
@@ -99,12 +110,12 @@ def hanoi(dados, lista_ver, disco):
     disco1 = dados[4]
     # tupla das condições de todos os movimentos possíveis em ordem de prioridade
     tupla_cond = (
-        lista_ver[0] == True and varetaA[-1] < varetaC[-1],  # A -> C
-        lista_ver[1] == True and varetaA[-1] < varetaB[-1],  # A -> B
-        lista_ver[2] == True and varetaC[-1] < varetaB[-1],  # C -> B
-        lista_ver[3] == True and varetaC[-1] < varetaA[-1],  # C -> A
-        lista_ver[4] == True and varetaB[-1] < varetaA[-1],  # B -> A
-        lista_ver[5] == True and varetaB[-1] < varetaC[-1],  # B -> C
+        lista_ver[0] and varetaA[-1] < varetaC[-1],  # A -> C
+        lista_ver[1] and varetaA[-1] < varetaB[-1],  # A -> B
+        lista_ver[2] and varetaC[-1] < varetaB[-1],  # C -> B
+        lista_ver[3] and varetaC[-1] < varetaA[-1],  # C -> A
+        lista_ver[4] and varetaB[-1] < varetaA[-1],  # B -> A
+        lista_ver[5] and varetaB[-1] < varetaC[-1],  # B -> C
     )
 
     # verifica o primeiro movimento possível A -> C
@@ -117,9 +128,8 @@ def hanoi(dados, lista_ver, disco):
             varetaA.append(disco)
             lista_ver[0] = False
             return hanoi(dados, lista_ver, disco)
-        else:
-            # finaliza o movimento
-            varetaC.append(disco)
+        # finaliza o movimento
+        varetaC.append(disco)
     # verifica o segundo movimento possível A -> B
     elif tupla_cond[1]:
         disco = varetaA.pop()
@@ -127,8 +137,7 @@ def hanoi(dados, lista_ver, disco):
             varetaA.append(disco)
             lista_ver[1] = False
             return hanoi(dados, lista_ver, disco)
-        else:
-            varetaB.append(disco)
+        varetaB.append(disco)
     # verifica o terceiro movimento possível C -> B
     elif tupla_cond[2]:
         disco = varetaC.pop()
@@ -136,8 +145,7 @@ def hanoi(dados, lista_ver, disco):
             varetaC.append(disco)
             lista_ver[2] = False
             return hanoi(dados, lista_ver, disco)
-        else:
-            varetaB.append(disco)
+        varetaB.append(disco)
     # verifica o quarto movimento possível C -> A
     elif tupla_cond[3]:
         disco = varetaC.pop()
@@ -145,8 +153,7 @@ def hanoi(dados, lista_ver, disco):
             varetaC.append(disco)
             lista_ver[3] = False
             return hanoi(dados, lista_ver, disco)
-        else:
-            varetaA.append(disco)
+        varetaA.append(disco)
     # verifica o quinto movimento possível B -> A
     elif tupla_cond[4]:
         disco = varetaB.pop()
@@ -154,8 +161,7 @@ def hanoi(dados, lista_ver, disco):
             varetaB.append(disco)
             lista_ver[4] = False
             return hanoi(dados, lista_ver, disco)
-        else:
-            varetaA.append(disco)
+        varetaA.append(disco)
     # verifica o sexto movimento possível B -> C
     elif tupla_cond[5]:
         disco = varetaB.pop()
@@ -163,8 +169,7 @@ def hanoi(dados, lista_ver, disco):
             varetaB.append(disco)
             lista_ver[5] = False
             return hanoi(dados, lista_ver, disco)
-        else:
-            varetaC.append(disco)
+        varetaC.append(disco)
     # atualiza o último disco jogado e retorna o resultado de uma jogada
     disco1 = disco
     dados = [varetaA, varetaB, varetaC, discos, disco1]
@@ -175,7 +180,7 @@ def resolver(dados):
     """Essa função mostra uma solução possível para o jogo
 
     Args:
-        dados (list): lista com os dados do jogo, incluindo as listas das varetas, a quantidade total de discos e o último disco jogado
+        dados (list): lista com dados do jogo, inclui as listas das varetas, o total de discos e o último disco jogado
 
     Returns:
         str: todas as jogadas até chegar na solução
@@ -187,7 +192,7 @@ def resolver(dados):
     dados = [varetas[0], varetas[1], varetas[2], discos, 0]
     # resolve a primera jogada
     resultado = hanoi(dados, [True, True, True, True, True, True], dados[4])
-    resposta = resultado[0] + "\n\n"
+    resposta = resultado[0].strip("`") + "\n\n"
     # prende o código até resolver todo o jogo
     while len(resultado[1][1]) != total and len(resultado[1][2]) != total:
         resultado = hanoi(
@@ -195,7 +200,7 @@ def resolver(dados):
             [True, True, True, True, True, True],
             resultado[1][4],
         )
-        resposta += resultado[0] + "\n\n"
+        resposta += resultado[0].strip("`") + "\n\n"
 
     return resposta
 
@@ -204,8 +209,8 @@ def jogada(dados, pos):
     """Essa função move os discos nas varetas de acordo com o usuário
 
     Args:
-        dados (list): lista com os dados do jogo, incluindo as listas das varetas, a quantidade total de discos e o último disco jogado
-        pos (str): jogada do usuário, "númeroLetra"
+        dados (list): lista com dados do jogo, inclui as listas das varetas, o total de discos e o último disco jogado
+        pos (tuple): jogada do usuário, (número, letra)
 
     Returns:
         tupla: resultado da jogada, dados e True se o jogo continua
@@ -225,12 +230,15 @@ def jogada(dados, pos):
         if vareta in "Aa":
             vareta = varetaA
             dados[0] = vareta
+            letra = "A"
         elif vareta in "Bb":
             vareta = varetaB
             dados[1] = vareta
+            letra = "B"
         elif vareta in "Cc":
             vareta = varetaC
             dados[2] = vareta
+            letra = "C"
         else:
             return (
                 "essa posição é inválida, tente novamente.",
@@ -271,28 +279,14 @@ def jogada(dados, pos):
             False,
         )
     # retorna a jogada com sucesso
-    return (f"você moveu o disco {disco} para a vareta {vareta[1]}.", dados, True)
-
-
-def menu():
-    """Essa função permite jogar pelo terminal, apresentando o menu e pedindo as jogadas"""
-    disco1 = 0
-    discos = int(input("Número de discos:\n"))
-    varetas = define_varetas(discos)
-    dados = [varetas[0], varetas[1], varetas[2], discos, disco1]
-
-    jogo = jogada(dados, input())
-    print(jogo[0])
-    while jogo[2]:
-        res = input("Digite sua jogada:\n")
-        if res == "1":
-            solucao = resolver(jogo[1])
-            print(solucao)
-            break
-        else:
-            jogo = jogada(dados, res)
-            print(jogo[0])
+    return (f"você moveu o disco {disco} para a vareta {letra}.", dados, True)
 
 
 if __name__ == "__main__":
-    menu()
+    print(
+        "Infelizamente, esse jogo está adaptado para o discord e não para o terminal."
+    )
+    disc = input(
+        "Se quiser, você pode ver uma solução por aqui, digite o número de discos.\n"
+    )
+    print(resolver([0, 0, 0, int(disc)]))

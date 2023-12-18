@@ -1,8 +1,16 @@
-# Esse módulo reune funções assíncronas para processar os menus de escolha e o jogo da Velha no discord
+"""
+Módulo das funções assíncronas para processar os menus de escolha e o jogo da Velha no discord
 
-import discord
-from comandos.pede_mensagem import *
+Funções:
+    bot_velha(channel = str, jogadores = tuple, jogos_velha = dict, bot = Bot)
+    velha(channel = str, jogador = Member, message = Message, jogos_velha = dict, bot = Bot)
+    menu_velha(channel = str, jogador = Member, jogos_velha = dict, bot = Bot)
+    verifica_velha(channel = str, jogador = Member, jogos_velha = dict, bot = Bot)
+"""
+
 import jogo_velha.jogo_da_velha as v
+import comandos.pede_mensagem as p
+import comandos.trata_arquivo as a
 
 
 async def bot_velha(channel, jogadores, jogos_velha, bot):
@@ -11,6 +19,11 @@ async def bot_velha(channel, jogadores, jogos_velha, bot):
     Args:
         channel (str): nome do canal de texto que solicitou as mensagens
         jogadores (tuple): nomes dos jogadores que estão no jogo: bot e usuário
+        jogos_velha (dict): dados gerais, inclui o índice do próximo jogador, a grade e a mensagem de orientação.
+        bot (Bot): dados do objeto "bot"
+
+    Returns:
+        dict : jogos_velha com a jogada atualizada
 
     """
     str_jogadores = jogadores[0] + "," + jogadores[1]
@@ -20,10 +33,9 @@ async def bot_velha(channel, jogadores, jogos_velha, bot):
     )
     # Envia a jogada do bot no discord
     desenho = v.imprime_grade(resultado[1])
-    await channel.send(
-        f"**Jogo da Velha de {jogadores[0]} e {jogadores[1]}** \n{resultado[2]}"
-    )
+    await channel.send(f"**Jogo da Velha de {jogadores[0]} e {jogadores[1]}**")
     await channel.send(desenho)
+    await channel.send(resultado[2])
 
     if resultado[3]:
         # Atualiza os dados do jogo do dicionário
@@ -35,7 +47,7 @@ async def bot_velha(channel, jogadores, jogos_velha, bot):
     else:
         jogos_velha.pop(str_jogadores)
     # Salva resultado no arquivo
-    salva_json(jogos_velha, "jogo_velha\\", "estados_velha.json")
+    a.salva_json(jogos_velha, "jogo_velha\\", "estados_velha.json")
 
     return jogos_velha
 
@@ -47,6 +59,11 @@ async def velha(channel, jogador, message, jogos_velha, bot):
         channel (str): nome do canal de texto das mensagens
         jogador (Member): informações do usuário que deseja jogar
         message (Message): mensagem enviada pelo usuário no discord
+        jogos_velha (dict): dados gerais, inclui o índice do próximo jogador, a grade e a mensagem de orientação.
+        bot (Bot): dados do objeto "bot"
+
+    Returns:
+        dict : jogos_velha com a jogada atualizada
     """
     # Verifica se o jogador está com um jogo em andamento
     jogadores = False
@@ -71,18 +88,17 @@ async def velha(channel, jogador, message, jogos_velha, bot):
             )
             # Manda se a jogada do usuário ou se ele precisa escolher outra
             desenho = v.imprime_grade(resultado[1])
-            await channel.send(
-                f"**Jogo da Velha de {jogadores[0]} e {jogadores[1]}** \n{resultado[2]}"
-            )
+            await channel.send(f"**Jogo da Velha de {jogadores[0]} e {jogadores[1]}**")
             await channel.send(desenho)
+            await channel.send(resultado[2])
             # Salva a jogada no dicionário
             jogos_velha[str_jogadores] = [resultado[0], resultado[1], resultado[2]]
             # Verifica se o jogo acabou
-            if resultado[3] == False:
+            if not resultado[3]:
                 # Retira o jogo do dicionário
                 jogos_velha.pop(str_jogadores)
             # Atualiza os dados do jogo no arquivo
-            salva_json(jogos_velha, "jogo_velha\\", "estados_velha.json")
+            a.salva_json(jogos_velha, "jogo_velha\\", "estados_velha.json")
             # Verfica se o jogo continua
             if resultado[3]:
                 # Verifica se o próximo jogador é o bot e faz a jogada dele
@@ -106,17 +122,19 @@ async def menu_velha(channel, jogador, jogos_velha, bot):
     Args:
         channel (str): nome do canal de texto que solicitou as mensagens
         jogador (Member): informações do usuário que deseja jogar
+        jogos_velha (dict): dados gerais, inclui o índice do próximo jogador, a grade e a mensagem de orientação.
+        bot (Bot): dados do objeto "bot"
 
     Returns:
-        tupla: nome dos jogadores
+        tuple : tupla dos nomes dos jogadores e dicionário jogos_velha com configurações iniciais
         bool: caso false, não se criará um novo jogo
 
     """
     # menu para decidir os parâmetros iniciais do jogo da forca
     descri = "escolha uma opção:"
     escolhas = ("Jogar com o bot", "Desafiar um amigo", "Ver instruções")
-    res = await menu3(channel, jogador, "Menu Jogo da Velha", descri, escolhas, bot)
-    if res == False:
+    res = await p.menu3(channel, jogador, "Menu Jogo da Velha", descri, escolhas, bot)
+    if not res:
         return False
 
     # Adiciona outro jogador como o bot
@@ -127,8 +145,10 @@ async def menu_velha(channel, jogador, jogos_velha, bot):
     # Adiciona o outro jogador como a pessoa marcada
     elif res == "2":
         descri = "marque o amigo com quem vai jogar"
-        jogador1 = await pede_mention(channel, jogador, "Desafio da Velha", descri, bot)
-        if jogador1 == False:
+        jogador1 = await p.pede_mention(
+            channel, jogador, "Desafio da Velha", descri, bot
+        )
+        if not jogador1:
             return False
         await channel.send(f"{jogador1} foi desafiado para o jogo da velha!")
         # Verifica se a pessoa marcada já estava em outro jogo
@@ -143,10 +163,10 @@ async def menu_velha(channel, jogador, jogos_velha, bot):
                 "Aceitar novo desafio",
                 "Retomar jogo anterior e desistir do desafio",
             )
-            res = await menu2(
+            res = await p.menu2(
                 channel, jogador1, "Aceitar desafio da velha?", descri, escolhas, bot
             )
-            if res == False:
+            if not res:
                 return False
             # A pessoa não aceitou o desafio
             if res == "2":
@@ -154,15 +174,15 @@ async def menu_velha(channel, jogador, jogos_velha, bot):
 
     # Mostra as instruções
     elif res == "3":
-        instru = ler_doc("jogo_velha\\", "instru_velha.txt")
+        instru = a.ler_doc("jogo_velha\\", "instru_velha.txt")
         await channel.send(instru)
         return False
 
     # Menu para decidir a ordem de quem jogará primeiro
     descri = "escolha uma opção:"
     escolhas = ("Sortear ordem de jogada", "Escolher o primeiro jogador")
-    res = await menu2(channel, jogador, "Sortear Velha", descri, escolhas, bot)
-    if res == False:
+    res = await p.menu2(channel, jogador, "Sortear Velha", descri, escolhas, bot)
+    if not res:
         return False
     vez = ""
 
@@ -178,10 +198,10 @@ async def menu_velha(channel, jogador, jogos_velha, bot):
     # Escolher quem joga primeiro
     elif res == "2":
         descri = "escreva quem irá jogar primeiro"
-        primeiro_jogador = await pede_mention(
+        primeiro_jogador = await p.pede_mention(
             channel, jogador, "Ordem de jogada", descri, bot
         )
-        if primeiro_jogador == False:
+        if not primeiro_jogador:
             return False
 
         if primeiro_jogador == jogador:
@@ -207,12 +227,26 @@ async def menu_velha(channel, jogador, jogos_velha, bot):
             + jogadores[1]: [0, [" ", " ", " ", " ", " ", " ", " ", " ", " "], vez]
         }
     )
-    salva_json(jogos_velha, "jogo_velha\\", "estados_velha.json")
+    a.salva_json(jogos_velha, "jogo_velha\\", "estados_velha.json")
     # retorna a tupla de jogadores na ordem de jogada
     return (jogadores, jogos_velha)
 
 
 async def verifica_velha(channel, jogador, jogos_velha, bot):
+    """Essa função verifica se o usuário já está em um jogo ou não, e, de acordo com as escolhas do usuário,
+    o direciona para o menu para criar um novo jogo ou retorna para o jogo antigo
+
+    Args:
+        channel (str): nome do canal de texto que solicitou as mensagens
+        jogador (Member): informações do usuário que deseja jogar
+        jogos_velha (dict): dados gerais, inclui o índice do próximo jogador, a grade e a mensagem de orientação.
+        bot (Bot): dados do objeto "bot"
+
+    Returns:
+        dict : jogos_velha com configurações do jogo novo ou antigo
+        bool: caso false, não se criará um novo jogo
+
+    """
     # verifica se já existe um jogo com esse usuário
     jogadores = False
     str_jogadores = ""
@@ -224,18 +258,17 @@ async def verifica_velha(channel, jogador, jogos_velha, bot):
     if jogadores:
         descri = "você já está jogando o jogo da velha, escolha:"
         escolhas = ("Continuar jogo antigo", "Ir para menu")
-        res = await menu2(
+        res = await p.menu2(
             channel, jogador, "Jogando o jogo da velha", descri, escolhas, bot
         )
-        if res == False:
+        if not res:
             return False
         # Volta para jogo antigo
         if res == "1":
             desenho = v.imprime_grade(jogos_velha[str_jogadores][1])
-            await channel.send(
-                f"**Jogo da Velha de {jogadores[0]} e {jogadores[1]}** \n{jogos_velha[str_jogadores][2]}"
-            )
+            await channel.send(f"**Jogo da Velha de {jogadores[0]} e {jogadores[1]}**")
             await channel.send(desenho)
+            await channel.send(jogos_velha[str_jogadores][2])
         # Vai para menu
         elif res == "2":
             info = await menu_velha(channel, jogador, jogos_velha, bot)

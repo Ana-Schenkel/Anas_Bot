@@ -1,8 +1,15 @@
-# Esse módulo reune funções assíncronas para processar os menus de escolha e o jogo da Forca no discord
+"""
+Módulo das funções assíncronas para processar os menus de escolha e o jogo da Forca no discord
 
-import discord
-from comandos.pede_mensagem import *
+Funções:
+    forca(channel = str, jogador = Member, message = Message, jogos_forca = dict)
+    menu_forca(channel = str, jogador = Member, jogos_forca = dict, bot = Bot)
+    verifica_forca(channel = str, jogador = Member, jogos_forca = dict, bot = Bot)
+"""
+
 import jogo_forca.forca as f
+import comandos.pede_mensagem as p
+import comandos.trata_arquivo as a
 
 
 async def forca(channel, jogador, message, jogos_forca):
@@ -12,8 +19,11 @@ async def forca(channel, jogador, message, jogos_forca):
         channel (str): nome do canal de texto das mensagens
         jogador (Member): informações do usuário que deseja jogar
         message (Message): mensagem enviada no discord
-    """
+        jogos_forca (dict): dados gerais do jogo, inclui a palavra, seu chute, letras usadas e a vida atual.
 
+    Returns:
+        dict : jogos_forca atualizado
+    """
     # verifica se o jogador tem um jogo salvo
     if jogador.name in jogos_forca:
         msg = message.content.strip("$ ")
@@ -28,11 +38,11 @@ async def forca(channel, jogador, message, jogos_forca):
         await channel.send(f"**Forca de {jogador.name}** {desenho}")
 
         # Verfica se o jogo acabou e retira os dados do jogo
-        if resultado[2] == False:
+        if not resultado[2]:
             jogos_forca.pop(jogador.name)
 
         # Atualiza o jogo no arquivo
-        salva_json(jogos_forca, "jogo_forca\\", "estados_forca.json")
+        a.salva_json(jogos_forca, "jogo_forca\\", "estados_forca.json")
 
     # Pede para o jogador criar um jogo novo
     else:
@@ -49,25 +59,27 @@ async def menu_forca(channel, jogador, jogos_forca, bot):
     Args:
         channel (str): nome do canal de texto que solicitou as mensagens
         jogador (Member): informações do usuário que deseja jogar
+        jogos_forca (dict): dados gerais do jogo, inclui a palavra, seu chute, letras usadas e a vida atual.
+        bot (Bot): dados do objeto "bot"
 
     Returns:
-        str: member que irá jogar
+        tuple : nome do jogador (Member) e jogos_forca com configurações iniciais (dict)
         bool: caso false, não se criará um novo jogo
 
     """
     # menu para decidir os parâmetros iniciais do jogo da forca
     descri = "escolha uma opção:"
     escolhas = ("Sortear uma palavra", "Desafiar um amigo", "Ver instruções")
-    res = await menu3(channel, jogador, "Menu Forca", descri, escolhas, bot)
-    if res == False:
+    res = await p.menu3(channel, jogador, "Menu Forca", descri, escolhas, bot)
+    if not res:
         return False
 
     # Sortear Palavra
     if res == "1":
         descri = "escolha um nível:"
         escolhas = ("Fácil", "Médio", "Difícil")
-        nivel = await menu3(channel, jogador, "Sorteia Forca", descri, escolhas, bot)
-        if nivel == False:
+        nivel = await p.menu3(channel, jogador, "Sorteia Forca", descri, escolhas, bot)
+        if not nivel:
             return False
 
         await channel.send(f"Olá {jogador}, uma palavra de nivel {nivel} foi sorteada!")
@@ -75,16 +87,16 @@ async def menu_forca(channel, jogador, jogos_forca, bot):
 
     # Desafiar Amigo
     elif res == "2":
-        palavra = await pede_dm(
+        palavra = await p.pede_dm(
             jogador, "Digite a palavra que você deseja que adivinhem na forca!", bot
         )
-        if palavra == False:
+        if not palavra:
             return False
 
         # Pede o nome do jogador
         descri = "digite quem você deseja desafiar"
-        jogador1 = await pede_mention(channel, jogador, "Desafio forca", descri, bot)
-        if jogador1 == False:
+        jogador1 = await p.pede_mention(channel, jogador, "Desafio forca", descri, bot)
+        if not jogador1:
             return False
         jogador = jogador1
 
@@ -98,10 +110,10 @@ async def menu_forca(channel, jogador, jogos_forca, bot):
                 "Aceitar novo desafio",
                 "Retomar jogo anterior e desistir do desafio",
             )
-            res = await menu2(
+            res = await p.menu2(
                 channel, jogador, "Aceitar desafio da forca?", descri, escolhas, bot
             )
-            if res == False:
+            if not res:
                 return False
             # Retorna caso a pessoa não aceite
             if res == "2":
@@ -118,14 +130,14 @@ async def menu_forca(channel, jogador, jogos_forca, bot):
 
     # Ver Instruções
     elif res == "3":
-        instru = ler_doc("jogo_forca\\", "instru_forca.txt")
+        instru = a.ler_doc("jogo_forca\\", "instru_forca.txt")
         await channel.send(instru)
         return False
 
     # Salva os parâmetros
     chute = ""
-    for i in range(len(palavra)):
-        if palavra[i] == " ":
+    for letra in palavra:
+        if letra == " ":
             chute += " "
         else:
             chute += "_"
@@ -134,18 +146,31 @@ async def menu_forca(channel, jogador, jogos_forca, bot):
     vida = 6
 
     jogos_forca.update({jogador.name: [palavra, chute, usados, vida]})
-    salva_json(jogos_forca, "jogo_forca\\", "estados_forca.json")
+    a.salva_json(jogos_forca, "jogo_forca\\", "estados_forca.json")
 
     return (jogador, jogos_forca)
 
 
 async def verifica_forca(channel, jogador, jogos_forca, bot):
+    """Essa função verifica se o usuário já está em um jogo ou não, e, de acordo com as escolhas do usuário,
+    o direciona para o menu para criar um novo jogo ou retorna para o jogo antigo
+
+    Args:
+        channel (str): nome do canal de texto que solicitou as mensagens
+        jogador (Member): informações do usuário que deseja jogar
+        jogos_forca (dict): dados gerais do jogo, inclui a palavra, seu chute, letras usadas e a vida atual.
+        bot (Bot): dados do objeto "bot"
+
+    Returns:
+        dict: jogos_forca com configurações do jogo novo ou antigo
+        bool: caso false, não se criará um novo jogo
+    """
     # Jogo em andamento
     if jogador.name in jogos_forca:
         descri = "você já está jogando a forca, escolha:"
         escolhas = ("Continuar jogo antigo", "Ir para menu")
-        res = await menu2(channel, jogador, "Jogando a forca", descri, escolhas, bot)
-        if res == False:
+        res = await p.menu2(channel, jogador, "Jogando a forca", descri, escolhas, bot)
+        if not res:
             return False
         # Volta para o jogo antigo
         if res == "1":

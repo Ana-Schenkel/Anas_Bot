@@ -1,9 +1,17 @@
-# Esse módulo reune funções assíncronas para processar os menus de escolha e o jogo da Velha no discord
+"""
+Módulo das funções assíncronas para processar os menus de escolha e o jogo da Torre de Hanoi no discord
+
+Funções:
+    bot_hanoi(jogador = Member, discos = int)
+    hanoi(channel = str, jogador = Member, message = Message, jogos_hanoi = dict)
+    menu_hanoi(channel = str, jogador = Member, jogos_hanoi = dict, bot = Bot)
+    verifica_hanoi(channel = str, jogador = Member, jogos_hanoi = dict, bot = Bot)
+"""
 
 import asyncio
-import discord
-from comandos.pede_mensagem import *
+import comandos.pede_mensagem as p
 import jogo_hanoi.torre_de_hanoi as h
+import comandos.trata_arquivo as a
 
 
 async def bot_hanoi(jogador, discos):
@@ -11,8 +19,7 @@ async def bot_hanoi(jogador, discos):
 
     Args:
         jogador (Member or str): informações do usuário ou canal para o qual a solução deve ser enviada
-
-
+        discos (int): quantidade de discos jogáveis na torre
     """
     # retorna para dados do início do jogo
     total = discos + 1
@@ -37,6 +44,17 @@ async def bot_hanoi(jogador, discos):
 
 
 async def hanoi(channel, jogador, message, jogos_hanoi):
+    """Essa função verifica se o usuário pode jogar e processa a jogada desejada, atualizando o estado do jogo
+
+    Args:
+        channel (str): nome do canal de texto das mensagens
+        jogador (Member): informações do usuário que deseja jogar
+        message (Message): mensagem enviada pelo usuário no discord
+        jogos_hanoi (dict): dados gerais, inclui pilhas de cada vareta, total de discos jogáveis e último disco jogado.
+
+    Returns:
+        dict : jogos_hanoi com a jogada atualizada
+    """
     if jogador.name in jogos_hanoi:
         msg = message.content.strip("$% ")
         vareta = msg[-1]
@@ -48,15 +66,15 @@ async def hanoi(channel, jogador, message, jogos_hanoi):
 
         desenho = h.desenha_hanoi(jogos_hanoi[jogador.name])
         await channel.send(
-            f"**Torre de {jogador.name}**\nObs: digite '$% discoVareta' para fazer sua joagada {desenho}"
+            f"**Torre de {jogador.name}**\nObs: digite '$% discoVareta' para fazer sua jogada {desenho}"
         )
 
         # Verfica se o jogo acabou e retira os dados do jogo
-        if resultado[2] == False:
+        if not resultado[2]:
             jogos_hanoi.pop(jogador.name)
 
         # Atualiza o jogo no arquivo
-        salva_json(jogos_hanoi, "jogo_hanoi\\", "estados_hanoi.json")
+        a.salva_json(jogos_hanoi, "jogo_hanoi\\", "estados_hanoi.json")
     # Pede para o jogador criar um jogo novo
     else:
         await channel.send(
@@ -73,25 +91,26 @@ async def menu_hanoi(channel, jogador, jogos_hanoi, bot):
     Args:
         channel (str): nome do canal de texto que solicitou as mensagens
         jogador (Member): informações do usuário que deseja jogar
+        jogos_hanoi (dict): dados gerais, inclui pilhas de cada vareta, total de discos jogáveis e último disco jogado.
+        bot (Bot): dados do objeto "bot"
 
     Returns:
-        Member: nome do jogador
+        tuple: nome do jogador (Member) e jogos_hanoi com configurações iniciais (dict)
         bool: caso false, não se criará um novo jogo
-
     """
     # menu para decidir os parâmetros iniciais do jogo da Torre de Hanói
     descri = "escolha uma opção:"
     escolhas = ("Jogar a Torre de Hanói", "Desafiar um amigo", "Ver instruções")
-    res = await menu3(channel, jogador, "Menu Torre de Hanoi", descri, escolhas, bot)
-    if res == False:
+    res = await p.menu3(channel, jogador, "Menu Torre de Hanoi", descri, escolhas, bot)
+    if not res:
         return False
 
     # Jogar a Torre
     if res == "1":
         descri = "escolha um nível:"
         escolhas = ("Fácil", "Médio", "Difícil")
-        nivel = await menu3(channel, jogador, "Nível da Torre", descri, escolhas, bot)
-        if nivel == False:
+        nivel = await p.menu3(channel, jogador, "Nível da Torre", descri, escolhas, bot)
+        if not nivel:
             return False
 
         await channel.send(f"Olá {jogador}, uma torre de nivel {nivel} foi feita!")
@@ -106,14 +125,14 @@ async def menu_hanoi(channel, jogador, jogos_hanoi, bot):
     elif res == "2":
         # Pede para o jogador decidir o tamnaho da Torre
         descri = "digite um número entre 2 e 14 para definir a quantidade de discos."
-        discos = await pede_num(
+        discos = await p.pede_num(
             channel, jogador, "Tamanho do Desafio Torre", descri, bot
         )
 
         # Pede o nome do jogador
         descri = "digite quem você deseja desafiar."
-        jogador1 = await pede_mention(channel, jogador, "Desafio Torre", descri, bot)
-        if jogador1 == False:
+        jogador1 = await p.pede_mention(channel, jogador, "Desafio Torre", descri, bot)
+        if not jogador1:
             return False
         jogador = jogador1
         await channel.send(
@@ -129,10 +148,10 @@ async def menu_hanoi(channel, jogador, jogos_hanoi, bot):
                 "Aceitar novo desafio",
                 "Retomar jogo anterior e desistir do desafio",
             )
-            res = await menu2(
+            res = await p.menu2(
                 channel, jogador, "Aceitar desafio da Torre?", descri, escolhas, bot
             )
-            if res == False:
+            if not res:
                 return False
             # Retorna caso a pessoa não aceite
             if res == "2":
@@ -147,7 +166,7 @@ async def menu_hanoi(channel, jogador, jogos_hanoi, bot):
 
     # Ver Instruções
     elif res == "3":
-        instru = ler_doc("jogo_hanoi\\", "instru_hanoi.txt")
+        instru = a.ler_doc("jogo_hanoi\\", "instru_hanoi.txt")
         await channel.send(instru)
         return False
 
@@ -158,12 +177,26 @@ async def menu_hanoi(channel, jogador, jogos_hanoi, bot):
     jogos_hanoi.update(
         {jogador.name: [varetas[0], varetas[1], varetas[2], discos, disco1]}
     )
-    salva_json(jogos_hanoi, "jogo_hanoi\\", "estados_hanoi.json")
+    a.salva_json(jogos_hanoi, "jogo_hanoi\\", "estados_hanoi.json")
 
     return (jogador, jogos_hanoi)
 
 
 async def verifica_hanoi(channel, jogador, jogos_hanoi, bot):
+    """Essa função verifica se o usuário já está em um jogo ou não, e, de acordo com as escolhas do usuário,
+    o direciona para o menu para criar um novo jogo ou retorna para o jogo antigo
+
+    Args:
+        channel (str): nome do canal de texto que solicitou as mensagens
+        jogador (Member): informações do usuário que deseja jogar
+        jogos_hanoi (dict): dados gerais, inclui pilhas de cada vareta, total de discos jogáveis e último disco jogado.
+        bot (Bot): dados do objeto "bot"
+
+    Returns:
+        dict: jogos_hanoi com configurações do jogo novo ou antigo
+        bool: caso false, não se criará um novo jogo
+    """
+    # Jogo em andamento
     if jogador.name in jogos_hanoi:
         descri = "você já está jogando a Torre de Hanói, escolha:"
         escolhas = (
@@ -171,8 +204,8 @@ async def verifica_hanoi(channel, jogador, jogos_hanoi, bot):
             "Ver uma possível solução",
             "Ir para menu",
         )
-        res = await menu3(channel, jogador, "Jogando a torre", descri, escolhas, bot)
-        if res == False:
+        res = await p.menu3(channel, jogador, "Jogando a torre", descri, escolhas, bot)
+        if not res:
             return False
         # Volta para o jogo antigo
         if res == "1":

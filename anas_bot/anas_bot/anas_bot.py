@@ -1,6 +1,9 @@
-# """Main module."""
+"""
+Main module.
+Esse módulo é o que você deve rodar no computador, ele inicia o bot e controla seus eventos e comandos.
+"""
 
-import comandos.pede_mensagem as p
+import comandos.trata_arquivo as a
 import discord
 import jogo_forca.forca_bot as f
 import jogo_hanoi.hanoi_bot as h
@@ -9,28 +12,24 @@ from discord.ext import commands
 
 bot = commands.Bot(command_prefix="$", intents=discord.Intents.all(), help_command=None)
 
-# Pega os estados dos jogos anteriores e salva em um dicionário
-jogos_forca = p.ler_doc("jogo_forca\\", "estados_forca.json")
-jogos_velha = p.ler_doc("jogo_velha\\", "estados_velha.json")
-jogos_hanoi = p.ler_doc("jogo_hanoi\\", "estados_hanoi.json")
-
 
 # Inicialização do bot ***********************************************************************************************
 @bot.event
 async def on_ready():
+    """Essa avisa pelo terminal que o bot está pronto para uso"""
     print(bot.user.name, "está logado")
 
 
 # Comandos do bot ****************************************************************************************************
 @bot.command()
 async def help(ctx):
-    """Essa função lê o arquivo de ajuda do bot (explica o comandos)
+    """Essa função lê o arquivo de ajuda do bot (explica os comandos)
 
     Args:
         ctx (str): canal de texto da mensagem enviada
 
     """
-    ajuda = p.ler_doc("comandos\\", "help.txt")
+    ajuda = a.ler_doc("comandos\\", "help.txt")
     await ctx.send(ajuda)
 
 
@@ -42,24 +41,33 @@ async def info(ctx):
         ctx (str): canal de texto da mensagem enviada
 
     """
-    info = p.ler_doc("comandos\\", "info.txt")
-    await ctx.send(info)
+    informa = a.ler_doc("comandos\\", "info.txt")
+    await ctx.send(informa)
 
 
 # Bloco para processar toda mensagem enviada ************************************************************************
 @bot.event
 async def on_message(message):
+    """Essa analisa toda mensagem enviada por um usuário no servidor
+
+    Args:
+        message (Message): objeto "Message" enviado no servidor
+
+    """
     await bot.process_commands(message)  # faz os comandos processarem
 
     channel = message.channel
     jogador = message.author
 
-    if jogador == bot.user:
+    if jogador == bot.user:  # não considera as mensagens do próprio bot
         return
 
-    # ************************************************* Jogo Forca *************************************************
+    # Pega os estados dos jogos anteriores e salva em um dicionário
+    jogos_forca = a.ler_doc("jogo_forca\\", "estados_forca.json")
+    jogos_velha = a.ler_doc("jogo_velha\\", "estados_velha.json")
+    jogos_hanoi = a.ler_doc("jogo_hanoi\\", "estados_hanoi.json")
 
-    global jogos_forca
+    # Jogo Forca
 
     # caso o usuário digite $forca, verifica se o usuário tem um jogo em andamento e/ou inicia novos jogos
     if message.content.startswith("$forca"):
@@ -69,9 +77,7 @@ async def on_message(message):
     if message.content.startswith("$$"):
         jogos_forca = await f.forca(channel, jogador, message, jogos_forca)
 
-    # ************************************************* Jogo da Velha *************************************************
-
-    global jogos_velha
+    # Jogo da Velha
 
     # caso o usuário digite $velha, verifica se o usuário tem um jogo em andamento e/ou inicia novos jogos
     if message.content.startswith("$velha"):
@@ -81,9 +87,7 @@ async def on_message(message):
     if message.content.startswith("$#"):
         jogos_velha = await v.velha(channel, jogador, message, jogos_velha, bot)
 
-    # ************************************************* Torre de Hanoi *************************************************
-
-    global jogos_hanoi
+    # Torre de Hanoi
 
     # caso o usuário digite $velha, verifica se o usuário tem um jogo em andamento e/ou inicia novos jogos
     if message.content.startswith("$hanoi"):
@@ -95,8 +99,8 @@ async def on_message(message):
 
 
 # roda o bot definido no token
-token = p.ler_doc("", "token.txt")
+token = a.pega_token("token.env")
 try:
     bot.run(token)
-except:
-    print("Algo errado com o arquivo token.txt, confira!")
+except discord.errors.LoginFailure:
+    print("Algo errado com o arquivo token.env, confira!")
