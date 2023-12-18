@@ -31,11 +31,12 @@ async def forca(channel, jogador, message, jogos_forca):
             jogos_forca[jogador.name], msg
         )  # função que processa a letra
 
-        await channel.send(resultado[0])
         jogos_forca[jogador.name] = resultado[1]
 
         desenho = f.desenha_forca(jogos_forca[jogador.name])
-        await channel.send(f"**Forca de {jogador.name}** {desenho}")
+        await channel.send(f"**Forca de {jogador.name}**")
+        await channel.send(desenho)
+        await channel.send(resultado[0])
 
         # Verfica se o jogo acabou e retira os dados do jogo
         if not resultado[2]:
@@ -175,7 +176,8 @@ async def verifica_forca(channel, jogador, jogos_forca, bot):
         # Volta para o jogo antigo
         if res == "1":
             desenho = f.desenha_forca(jogos_forca[jogador.name])
-            await channel.send(f"**Forca de {jogador.name}** {desenho}")
+            await channel.send(f"**Forca de {jogador.name}**")
+            await channel.send(desenho)
         # Vai para menu
         elif res == "2":
             info = await menu_forca(channel, jogador, jogos_forca, bot)
@@ -183,7 +185,8 @@ async def verifica_forca(channel, jogador, jogos_forca, bot):
                 jogador = info[0]
                 jogos_forca = info[1]
                 desenho = f.desenha_forca(jogos_forca[jogador.name])
-                await channel.send(f"**Forca de {jogador.name}**{desenho}")
+                await channel.send(f"**Forca de {jogador.name}**")
+                await channel.send(desenho)
     # Novo jogo
     else:
         info = await menu_forca(channel, jogador, jogos_forca, bot)
@@ -191,6 +194,7 @@ async def verifica_forca(channel, jogador, jogos_forca, bot):
             jogador = info[0]
             jogos_forca = info[1]
             desenho = f.desenha_forca(jogos_forca[jogador.name])
-            await channel.send(f"**Forca de {jogador.name}**{desenho}")
+            await channel.send(f"**Forca de {jogador.name}**")
+            await channel.send(desenho)
 
     return jogos_forca

@@ -172,7 +172,7 @@ def forca(dados, mensagem):
             # verifica se a palavra está completa
             if palavra == chute:
                 return (
-                    "Você venceu! A palavra era " + palavra,
+                    "Você venceu! A palavra era " + palavra + "  :snake:",
                     [palavra, chute, usados, vida],
                     False,
                 )
@@ -184,7 +184,7 @@ def forca(dados, mensagem):
             usados.append(letra)
             if vida == 0:
                 return (
-                    "Você perdeu, a palavra era " + palavra,
+                    "Você perdeu, a palavra era " + palavra + "  :eagle:",
                     [palavra, chute, usados, vida],
                     False,
                 )

@@ -61,13 +61,14 @@ async def hanoi(channel, jogador, message, jogos_hanoi):
         disco = msg.strip(msg[-1])
         resultado = h.jogada(jogos_hanoi[jogador.name], (disco, vareta))
 
-        await channel.send(f"{jogador.name}, {resultado[0]}")
         jogos_hanoi[jogador.name] = resultado[1]
 
         desenho = h.desenha_hanoi(jogos_hanoi[jogador.name])
         await channel.send(
-            f"**Torre de {jogador.name}**\nObs: digite '$% discoVareta' para fazer sua jogada {desenho}"
+            f"**Torre de {jogador.name}**\nObs: digite '$% discoVareta' para fazer sua jogada"
         )
+        await channel.send(desenho)
+        await channel.send(f"{jogador.name}, {resultado[0]}")
 
         # Verfica se o jogo acabou e retira os dados do jogo
         if not resultado[2]:
@@ -211,8 +212,9 @@ async def verifica_hanoi(channel, jogador, jogos_hanoi, bot):
         if res == "1":
             desenho = h.desenha_hanoi(jogos_hanoi[jogador.name])
             await channel.send(
-                f"**Torre de {jogador.name}**\nObs: digite '$% discoVareta' para fazer sua jogada. {desenho}"
+                f"**Torre de {jogador.name}**\nObs: digite '$% discoVareta' para fazer sua jogada."
             )
+            await channel.send(desenho)
         # Manda a resolução no privado
         elif res == "2":
             await bot_hanoi(jogador, jogos_hanoi[jogador.name][3])
@@ -221,8 +223,9 @@ async def verifica_hanoi(channel, jogador, jogos_hanoi, bot):
             )
             desenho = h.desenha_hanoi(jogos_hanoi[jogador.name])
             await channel.send(
-                f"**Torre de {jogador.name}**\nObs: digite '$% discoVareta' para fazer sua jogada. {desenho}"
+                f"**Torre de {jogador.name}**\nObs: digite '$% discoVareta' para fazer sua jogada."
             )
+            await channel.send(desenho)
         # Vai para menu
         elif res == "3":
             info = await menu_hanoi(channel, jogador, jogos_hanoi, bot)
@@ -231,8 +234,9 @@ async def verifica_hanoi(channel, jogador, jogos_hanoi, bot):
                 jogos_hanoi = info[1]
                 desenho = h.desenha_hanoi(jogos_hanoi[jogador.name])
                 await channel.send(
-                    f"**Torre de {jogador.name}**\nObs: digite '$% discoVareta' para fazer sua jogada. {desenho}"
+                    f"**Torre de {jogador.name}**\nObs: digite '$% discoVareta' para fazer sua jogada."
                 )
+                await channel.send(desenho)
     # Novo jogo
     else:
         info = await menu_hanoi(channel, jogador, jogos_hanoi, bot)
@@ -241,7 +245,8 @@ async def verifica_hanoi(channel, jogador, jogos_hanoi, bot):
             jogos_hanoi = info[1]
             desenho = h.desenha_hanoi(jogos_hanoi[jogador.name])
             await channel.send(
-                f"**Torre de {jogador.name}**\nObs: digite '$% discoVareta' para fazer sua jogada. {desenho}"
+                f"**Torre de {jogador.name}**\nObs: digite '$% discoVareta' para fazer sua jogada."
             )
+            await channel.send(desenho)
 
     return jogos_hanoi

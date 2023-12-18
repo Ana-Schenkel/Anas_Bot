@@ -274,7 +274,7 @@ def jogada(dados, pos):
     # verifica se o jogo acabou
     if len(varetaB) == total or len(varetaC) == total:
         return (
-            "você ganhou!!",
+            "você ganhou!!  :snake:",
             dados,
             False,
         )

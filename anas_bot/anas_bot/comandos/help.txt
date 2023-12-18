@@ -1,14 +1,16 @@
-Oii, eu sou o Ana's Bot!
-Sou um bot desenvolvido com discord.py, você sempre falará comigo digitando "$", aqui estão algumas das minhas funcionalidades:
+Oii, eu sou o **Ana's Bot**!
+Sou um bot desenvolvido com __discord.py__, você sempre falará comigo digitando "$", aqui estão algumas das minhas funcionalidades:
 
-$forca (Forca): 
+**$forca (Forca):**
 Os usuários podem escolher uma palavra ou frase para que outros tentem adivinhar, e eu acompanho o progresso do jogo, mostrando a forca e as letras adivinhadas. Os usuários também podem escolher jogar individualmemte, escolhendo sortear uma palavra do arquivo de palavras.
 
-$velha (Jogo da Velha): 
+**$velha (Jogo da Velha):**
 Os usuários podem jogar o Jogo da Velha (ou Tic-Tac-Toe) comigo ou entre si. Eu gerencio o tabuleiro e verifico as vitórias ou empates.
 
-$hanoi (Torre de Hanói): 
+**$hanoi (Torre de Hanói):**
 Os jogadores devem mover discos entre três pinos, respeitando as regras do jogo. Eu ajudo a acompanhar o progresso do jogo e a encontrar a solução para o quebra-cabeça.
 
-$info (Comandos de informações): 
+**$info (Comandos de informações):**
 Os usuários podem obter informações sobre mim, meus criadores e a disciplina de Computação 1 da UFRJ.
+
+Você poderá acessar instruções mais específicas de cada jogo ao ir para o menu de cada um e digitar a opção "3" de instruções.

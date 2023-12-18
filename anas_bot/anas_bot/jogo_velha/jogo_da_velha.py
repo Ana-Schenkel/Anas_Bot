@@ -240,13 +240,13 @@ def jogo_da_velha(dados, jogadores, bot, mensagem):
         str_vitoria = verifica_vitoria(grade)
 
         if grade.count(" ") == 0:
-            return (indice_jogador, grade, "**Deu Velha!**", False)
+            return (indice_jogador, grade, "**Deu Velha!**  :older_woman:", False)
 
         elif "XXX" in str_vitoria or "OOO" in str_vitoria:
             return (
                 not indice_jogador,
                 grade,
-                "**" + jogadores[not indice_jogador] + " você ganhou!**",
+                "**" + jogadores[not indice_jogador] + " ganhou!**  :snake:",
                 False,
             )
         else:
