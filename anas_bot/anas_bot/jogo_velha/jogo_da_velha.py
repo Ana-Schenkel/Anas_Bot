@@ -42,7 +42,7 @@ def faz_jogada(jogador, grade):
     """Essa função processa a próxima jogada do bot
 
     Args:
-       jogador (int): index do jogador na lista "jogadores"
+       jogador (int): index do bot na lista "jogadores"
        grade (list): grade que forma o tabuleiro do jogo da velha
 
     Returns:

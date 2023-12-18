@@ -48,10 +48,11 @@ Para utilizar o bot você deve seuir as instruções abaixo:
 3. Instale as bibliotecas do requirements.txt no seu ambiente de programação.
 4. Rode o código uma vez (terá uma mensagem de erro) para aparecer o arquivo token.env na pasta "anas_bot".
 5. Crie o seu bot no discord com as devidas permissões (administrador para facilitar), adicione-o em um servidor, e copie seu token para o arquivo token.env.
-6. O bot deve entrar online assim que você rodar o código principal em seu computador.
+6. O bot deve entrar online assim que você rodar o código principal (anas_bot.py) em seu computador.
 
 Problemas frequentes:
- - Dificuldade para instalar a biblioteca discord.py, um erro comum é "Could not build wheels for multidict...", esse vídeo pode ajudar: https://www.youtube.com/watch?v=hgNxAxyncdc
+
+- Dificuldade para instalar a biblioteca discord.py, um erro comum é "Could not build wheels for multidict...", esse vídeo pode ajudar: https://www.youtube.com/watch?v=hgNxAxyncdc
 
 ## Dependencies
 
@@ -111,8 +112,9 @@ Para esse projeto, foi utilizado o o template pypackage do projeto `audreyr/cook
 - `audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage
 
 Também deixo como referência a série de vídeos do @CivoCode sobre a biblioteca discord.py.
+
 - https://www.youtube.com/watch?v=kcgQfOpazhU&list=PLW9I0hYEya07AHzGNHh470BODgNae8RPh&pp=iAQB
-  
+
 <hr>
 
 [Go to Top](#table-of-contents)

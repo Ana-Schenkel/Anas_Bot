@@ -100,7 +100,7 @@ def hanoi(dados, lista_ver, disco):
         disco: disco que está tentando mover
 
     Returns:
-        str: a próxima jogada certa
+        tuple: desenho da próxima jogada certa e novos dados
     """
     # torna os dados mais legíveis
     varetaA = dados[0]
